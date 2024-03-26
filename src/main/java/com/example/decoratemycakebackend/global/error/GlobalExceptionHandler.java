@@ -1,6 +1,7 @@
 package com.example.decoratemycakebackend.global.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -67,6 +68,14 @@ public class GlobalExceptionHandler {
     // JSON 파싱 에러(클라이언트 요청이 잘못됨)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.error("handleHttpMessageNotReadableException: {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INVALID_REQUEST_BODY.getStatus())
+                .body(new ErrorResponse(ErrorCode.INVALID_REQUEST_BODY));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error("handleHttpMessageNotReadableException: {}", e.getMessage());
         return ResponseEntity
                 .status(ErrorCode.INVALID_REQUEST_BODY.getStatus())

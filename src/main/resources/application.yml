@@ -35,5 +35,5 @@ spring:
         paths-to-match:
             - /**
 
-jwt:
-    secret: ${JWT_SECRET}
+    jwt:
+        secret: ${JWT_SECRET}
