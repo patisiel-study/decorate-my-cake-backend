@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.iml" filepath="$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.test.iml" filepath="$PROJECT_DIR$/.idea/modules/decorate-my-cake-backend.test.iml" />
     </modules>
