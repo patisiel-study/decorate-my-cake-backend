@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.member.entity;
 
+import com.example.decoratemycakebackend.domain.friend.entity.FriendRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,6 +47,12 @@ public class Member implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
     }
+
+    @OneToMany(mappedBy = "receiver")
+    private List<FriendRequest> receivedFriendRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<FriendRequest> sendFriendRequests = new ArrayList<>();
 
     @Override
     public String getUsername() {

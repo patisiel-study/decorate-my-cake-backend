@@ -1,13 +1,12 @@
 spring:
     datasource:
-        driver-class-name: org.postgresql.Driver
+        driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
         url: ${DB_URL}
         username: ${DB_USERNAME}
         password: ${DB_PASSWORD}
 
 
     jpa:
-        database-platform: org.hibernate.dialect.PostgreSQLDialect
         generate-ddl: true
         open-in-view: true
         hibernate:
