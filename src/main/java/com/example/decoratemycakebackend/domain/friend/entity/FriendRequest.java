@@ -29,11 +29,68 @@ public class FriendRequest {
 
     private String profileImg;
 
-    public void accept() {
-        this.status = FriendRequestStatus.ACCEPTED;
+//    public void accept() {
+//        this.status = FriendRequestStatus.ACCEPTED;
+//    }
+//
+//    public void reject() {
+//        this.status = FriendRequestStatus.REJECTED;
+//    }
+
+    public FriendRequest updateToPending(String message) {
+        if (this.status != FriendRequestStatus.REJECTED && this.status != FriendRequestStatus.DELETED) {
+            throw new IllegalStateException("Only rejected friend requests can be updated to pending.");
+        }
+        return FriendRequest.builder()
+                .id(this.id)
+                .sender(this.sender)
+                .receiver(this.receiver)
+                .status(FriendRequestStatus.PENDING)
+                .message(message)
+                .profileImg(this.profileImg)
+                .build();
     }
 
-    public void reject() {
-        this.status = FriendRequestStatus.REJECTED;
+    public FriendRequest acceptRequest() {
+        if (this.status != FriendRequestStatus.PENDING) {
+            throw new IllegalStateException("Only pending friend requests can be accepted.");
+        }
+        return FriendRequest.builder()
+                .id(this.id)
+                .sender(this.sender)
+                .receiver(this.receiver)
+                .status(FriendRequestStatus.ACCEPTED)
+                .message(this.message)
+                .profileImg(this.profileImg)
+                .build();
     }
+
+    public FriendRequest rejectRequest() {
+        if (this.status != FriendRequestStatus.PENDING) {
+            throw new IllegalStateException("Only pending friend requests can be rejected.");
+        }
+        return FriendRequest.builder()
+                .id(this.id)
+                .sender(this.sender)
+                .receiver(this.receiver)
+                .status(FriendRequestStatus.REJECTED)
+                .message(this.message)
+                .profileImg(this.profileImg)
+                .build();
+    }
+
+    public FriendRequest deleteRequest() {
+        if (this.status != FriendRequestStatus.ACCEPTED) {
+            throw new IllegalStateException("Only accepted friend requests can be deleted.");
+        }
+        return FriendRequest.builder()
+                .id(this.id)
+                .sender(this.sender)
+                .receiver(this.receiver)
+                .status(FriendRequestStatus.DELETED)
+                .message(this.message)
+                .profileImg(this.profileImg)
+                .build();
+    }
+
 }
