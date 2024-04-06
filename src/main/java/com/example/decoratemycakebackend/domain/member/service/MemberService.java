@@ -2,6 +2,8 @@ package com.example.decoratemycakebackend.domain.member.service;
 
 import com.example.decoratemycakebackend.domain.member.dto.MemberDto;
 import com.example.decoratemycakebackend.domain.member.dto.SignUpDto;
+import com.example.decoratemycakebackend.domain.member.entity.Member;
+import com.example.decoratemycakebackend.domain.member.mapper.MemberMapper;
 import com.example.decoratemycakebackend.domain.member.repository.MemberRepository;
 import com.example.decoratemycakebackend.global.auth.JwtToken;
 import com.example.decoratemycakebackend.global.auth.JwtTokenProvider;
@@ -26,6 +28,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final MemberMapper memberMapper;
 
     public JwtToken logIn(String username, String password) {
         // 1. username + password 기반으로 Authentication 객체 생성
@@ -55,6 +58,7 @@ public class MemberService {
         List<String> roles = new ArrayList<>();
         roles.add("MEMBER");
 
-        return MemberDto.toDto(memberRepository.save(signUpDto.toEntity(encodedPassword, roles)));
+        Member savedMember = memberRepository.save(memberMapper.toMember(signUpDto, encodedPassword, roles));
+        return memberMapper.toMemberDto(savedMember);
     }
 }

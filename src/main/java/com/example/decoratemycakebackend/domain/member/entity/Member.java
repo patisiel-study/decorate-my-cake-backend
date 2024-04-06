@@ -1,6 +1,7 @@
 package com.example.decoratemycakebackend.domain.member.entity;
 
-import com.example.decoratemycakebackend.domain.cake.entity.Cake;
+
+import com.example.decoratemycakebackend.domain.friend.entity.FriendRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,7 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id", nullable = false)
-    private Long id;
+    private Long memberId;
 
     @Column(nullable = false)
     private String email;
@@ -51,6 +52,12 @@ public class Member implements UserDetails {
                 .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
     }
+
+    @OneToMany(mappedBy = "receiver")
+    private List<FriendRequest> receivedFriendRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<FriendRequest> sendFriendRequests = new ArrayList<>();
 
     @Override
     public String getUsername() {
