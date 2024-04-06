@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "사용자 없음")
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<JwtToken>> logIn(@RequestBody LogInDto logInDto) {
+    public ResponseEntity<ResponseDto<JwtToken>> logIn(@Valid @RequestBody LogInDto logInDto) {
         String email = logInDto.getEmail();
         String password = logInDto.getPassword();
 
@@ -54,7 +55,7 @@ public class MemberController {
             @ApiResponse(responseCode = "409", description = "이메일 중복")
     })
     @PostMapping("/signup")
-    public ResponseEntity<ResponseDto<MemberDto>> signUp(@RequestBody SignUpDto signUpDto) {
+    public ResponseEntity<ResponseDto<MemberDto>> signUp(@Valid @RequestBody SignUpDto signUpDto) {
         MemberDto savedMemberDto = memberService.signUp(signUpDto);
         String message = String.format("환영합니다, %s님!", savedMemberDto.getNickname());
         return ResponseEntity.ok(new ResponseDto<>(message, savedMemberDto));

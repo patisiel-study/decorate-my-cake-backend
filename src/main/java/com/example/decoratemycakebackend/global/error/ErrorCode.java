@@ -27,7 +27,7 @@ public enum ErrorCode {
      * 500 INTERNAL_SERVER_ERROR: 내부 서버 오류
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다."),
-    MISSING_REQUEST_PARAMETER(HttpStatus.BAD_REQUEST, "필수 요청 매개변수가 누락되었습니다."),
+    VALIDATION_FAILURE(HttpStatus.BAD_REQUEST, "유효성 검사에 실패했습니다."),
     INVALID_REQUEST_BODY(HttpStatus.BAD_REQUEST, "요청 본문이 유효하지 않습니다."),
 
 

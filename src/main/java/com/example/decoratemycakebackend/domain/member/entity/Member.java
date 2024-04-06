@@ -22,7 +22,7 @@ public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "member_id", nullable = false)
-    private Long id;
+    private Long memberId;
 
     @Column(nullable = false)
     private String email;
