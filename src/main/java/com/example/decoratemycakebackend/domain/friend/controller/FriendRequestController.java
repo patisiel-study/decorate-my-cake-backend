@@ -40,4 +40,11 @@ public class FriendRequestController {
     public ResponseEntity<ResponseDto<?>> getFriendRequestList(@RequestBody FriendRequestListRequestDto friendRequestListRequestDto) {
         return ResponseEntity.ok(new ResponseDto<>("친구 요청 목록 조회가 완료되었습니다.", friendRequestService.getFriendRequestList(friendRequestListRequestDto)));
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<ResponseDto<?>> deleteFriend(@RequestBody FriendDeleteRequestDto friendDeleteRequestDto) {
+        friendRequestService.deleteFriend(friendDeleteRequestDto);
+        return ResponseEntity.ok(new ResponseDto<>("친구 삭제가 완료되었습니다.", null));
+    }
+
 }
