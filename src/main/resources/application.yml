@@ -73,5 +73,7 @@ spring:
         paths-to-match:
             - /**
 
+
 jwt:
     secret: ${JWT_SECRET}
+
