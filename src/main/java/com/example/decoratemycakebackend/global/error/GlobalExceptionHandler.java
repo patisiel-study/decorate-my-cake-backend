@@ -37,13 +37,13 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ErrorCode.METHOD_NOT_ALLOWED));
     }
 
-    // 필수 매개변수 누락 에러 헨들러
+    // 유효성 검증 처리 실패
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.error("handleMethodArgumentNotValidException: {}", e.getMessage());
         return ResponseEntity
-                .status(ErrorCode.MISSING_REQUEST_PARAMETER.getStatus())
-                .body(new ErrorResponse(ErrorCode.MISSING_REQUEST_PARAMETER));
+                .status(ErrorCode.VALIDATION_FAILURE.getStatus())
+                .body(new ErrorResponse(ErrorCode.VALIDATION_FAILURE));
     }
 
     // 로그인 인증에러
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ErrorCode.LOGIN_FAILURE));
     }
 
-    // JSON 파싱 에러(클라이언트 요청이 잘못됨)
+    // 클라이언트의 요청 형식이 잘못됨
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("handleHttpMessageNotReadableException: {}", e.getMessage());
