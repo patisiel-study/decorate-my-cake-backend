@@ -1,12 +1,15 @@
 # 기본 이미지는 jdk 17
 FROM openjdk:17
 
-#빌드 시점에 사용될 변수를 정의
-#JAR_FILE은 빌드 컨텍스트 내의 jar 파일 경로를 지정하는 데 사용
+# 빌드 시점에 사용될 변수를 정의
+# JAR_FILE은 빌드 컨텍스트 내의 jar 파일 경로를 지정하는 데 사용
 ARG JAR_FILE=build/libs/*.jar
 
-# ARG에서 정의한 JAR_FILE 경로의 jar 파일을 컨테이너 내 app.jar로 복사
-COPY ${JAR_FILE} /app/
+# JAR 파일이 위치할 디렉토리 생성
+RUN mkdir /app
+
+# ARG에서 정의한 JAR_FILE 경로의 jar 파일을 컨테이너 내 /app 디렉토리로 복사
+COPY ${JAR_FILE} /app/app.jar
 
 # 컨테이너가 시작될 때 실행될 명령어 정의
-ENTRYPOINT ["java","-Dspring.profiles.active=docker", "-jar","app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "/app/app.jar"]
