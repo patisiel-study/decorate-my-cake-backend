@@ -6,7 +6,7 @@ FROM openjdk:17
 ARG JAR_FILE=build/libs/*.jar
 
 # ARG에서 정의한 JAR_FILE 경로의 jar 파일을 컨테이너 내 app.jar로 복사
-COPY ${JAR_FILE} app.jar
+COPY ${JAR_FILE} /app/
 
 # 컨테이너가 시작될 때 실행될 명령어 정의
 ENTRYPOINT ["java","-Dspring.profiles.active=docker", "-jar","app.jar"]
