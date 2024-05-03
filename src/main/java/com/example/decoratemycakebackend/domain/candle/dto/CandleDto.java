@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,8 +14,9 @@ import java.time.LocalDateTime;
 public class CandleDto {
     private Long id;
     private String candleName;
-    private LocalDateTime createAt;
+    private LocalDate createdAt;
     private String candleTitle;
+    private String candleContent;
     private Boolean Private;
     private String writer;
 

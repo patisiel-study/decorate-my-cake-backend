@@ -11,9 +11,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CakeDto {
-    private Long id;
-    private String cakeName;
-    private LocalDate cakeCreatedAt;
-    private LocalDate updateAt;
+public class CakeDeleteRequestDto {
+    private String email;
+    private LocalDate createdAt;
 }

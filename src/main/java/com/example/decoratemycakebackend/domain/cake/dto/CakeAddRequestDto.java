@@ -9,11 +9,14 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class CakeDto {
-    private Long id;
+@NoArgsConstructor
+public class CakeAddRequestDto {
+    private String email;
+    private LocalDate createdAt;
     private String cakeName;
-    private LocalDate cakeCreatedAt;
-    private LocalDate updateAt;
+    private SettingDto setting;
+
+
 }
+

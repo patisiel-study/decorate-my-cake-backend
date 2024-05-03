@@ -6,7 +6,7 @@ import com.example.decoratemycakebackend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,23 +23,17 @@ public class Cake extends BaseEntity {
     private Long id;
     private String nickname;
     private String cakeName;
-    private LocalDateTime createCreatedAt;
-    private LocalDateTime updateAt;
+    private LocalDate createdAt;
 
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
 
     @OneToOne(mappedBy = "cake", cascade = CascadeType.ALL)
-    private Setting setting;
+    private Setting setting = new Setting();
 
     @OneToMany(mappedBy = "cake", cascade = CascadeType.ALL)
     private List<Candle> candles = new ArrayList<>();
 
-    public Cake(String cakeName, LocalDateTime createCreatedAt, LocalDateTime updateAt) {
-        this.cakeName = cakeName;
-        this.createCreatedAt = createCreatedAt;
-        this.updateAt = updateAt;
-    }
 
 }

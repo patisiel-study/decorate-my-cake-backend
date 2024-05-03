@@ -5,7 +5,7 @@ import com.example.decoratemycakebackend.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -18,7 +18,7 @@ public class Candle extends BaseEntity {
     private Long id;
     private String candleContent;
     private String candleName;
-    private LocalDateTime createAt;
+    private LocalDate createdAt;
     private String candleTitle;
     private Boolean Private;
     private String writer;

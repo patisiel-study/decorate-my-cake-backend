@@ -1,18 +1,12 @@
 package com.example.decoratemycakebackend.domain.cake.controller;
 
-import com.example.decoratemycakebackend.domain.cake.dto.CakeDto;
-import com.example.decoratemycakebackend.domain.cake.entity.Cake;
+import com.example.decoratemycakebackend.domain.cake.dto.*;
 import com.example.decoratemycakebackend.domain.cake.service.CakeService;
-import com.example.decoratemycakebackend.domain.member.dto.MemberCakeDto;
-import com.example.decoratemycakebackend.domain.member.entity.Member;
-import com.example.decoratemycakebackend.global.common.Response;
+import com.example.decoratemycakebackend.global.util.ResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/cakes")
@@ -24,24 +18,29 @@ public class CakeController {
         this.cakeService = cakeService;
     }
 
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> findAllCakes(@RequestBody Map<String, String> requestData) {
-        String email = requestData.get("email");
-        LocalDateTime createCreatedAt = LocalDateTime.parse(requestData.get("createCreatedAt"));
+    @GetMapping("/list")
+    public ResponseEntity<ResponseDto<CakeGetResponseDto>> getCake(@RequestParam String email, @RequestParam LocalDate createdAt) {
+        CakeGetRequestDto requestDto = new CakeGetRequestDto(email);
+        CakeGetResponseDto cakeGetResponseDto = cakeService.getCake(requestDto);
+        return ResponseEntity.ok(new ResponseDto<>("케이크 조회가 완료되었습니다.", cakeGetResponseDto));
+    }
 
-        Map<String, Object> response = cakeService.findAllCakes(email, createCreatedAt);
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDto<CakeAddResponseDto>> createCake(@RequestBody CakeAddRequestDto requestDto) {
+        ResponseDto<CakeAddResponseDto> response = cakeService.addCake(requestDto);
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/cake")
+    public ResponseEntity<CakePutResponseDto> updateCake(@RequestBody CakePutRequestDto requestDto) {
+        CakePutResponseDto responseDto = cakeService.updateCake(requestDto);
+        return ResponseEntity.ok(responseDto);
+    }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto<Void>> deleteCake(@RequestBody CakeDeleteRequestDto requestDto) {
+        cakeService.deleteCake(requestDto);
+        return ResponseEntity.ok(new ResponseDto<>("케이크 삭제가 완료되었습니다.", null));
+    }
 
-
-
-
-
-    /*@PostMapping("/create")
-    public ResponseEntity<Response<CakeDto>> createCake(@RequestBody CakeDto cakeDto) {
-        Response<CakeDto> response = cakeService.addCake(cakeDto);
-        return ResponseEntity.ok(response);
-    }*/
 }

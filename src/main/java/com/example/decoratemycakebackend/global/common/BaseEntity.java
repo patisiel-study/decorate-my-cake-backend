@@ -4,14 +4,14 @@ import jakarta.persistence.MappedSuperclass;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @MappedSuperclass
 public abstract class BaseEntity {
     @CreatedDate
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updateAt;
+    private LocalDate updatedAt;
 
 }

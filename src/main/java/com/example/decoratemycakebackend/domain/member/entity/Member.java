@@ -1,6 +1,7 @@
 package com.example.decoratemycakebackend.domain.member.entity;
 
 
+import com.example.decoratemycakebackend.domain.cake.entity.Cake;
 import com.example.decoratemycakebackend.domain.friend.entity.FriendRequest;
 import jakarta.persistence.*;
 import lombok.*;

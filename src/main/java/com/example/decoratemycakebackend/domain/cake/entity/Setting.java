@@ -6,8 +6,9 @@ import lombok.*;
 
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
+@Setter
 @Builder
 public class Setting extends BaseEntity {
     @Id
