@@ -3,26 +3,20 @@ package com.example.decoratemycakebackend.domain.cake.dto;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleListDto;
-import lombok.*;
+import com.example.decoratemycakebackend.domain.candle.entity.Candle;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class CakeAddResponseDto {
+@Builder
+public class CakeCreateResponseDto {
+    private CakeSetting setting;
     private String nickname;
     private String cakeName;
-    //private LocalDate createdAt;
-    private int cakecreatedYear;
-    private List<CandleListDto> candleList;
-    private int totalCandle;
-    //private int totalPage;
-    //private int offset;
-    private CakeSetting setting;
-    //private CakePageInfoDto pageInfo;
+    private int cakeCreatedYear;
+    private List<Candle> candleList;
 
     @Getter
     @Builder

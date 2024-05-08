@@ -5,15 +5,14 @@ import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermissi
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
-public class CakePutResponseDto {
+public class CakeCreateRequestDto {
     private String cakeName;
+    private String email;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;
     private CandleCountPermission candleCountPermission;

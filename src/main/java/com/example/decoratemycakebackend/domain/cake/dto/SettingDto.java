@@ -1,6 +1,7 @@
-package com.example.decoratemycakebackend.domain.cake.dto;
+/*package com.example.decoratemycakebackend.domain.cake.dto;
 
-import com.example.decoratemycakebackend.domain.cake.entity.Setting;
+import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
+import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -14,10 +15,10 @@ import lombok.Setter;
 @Setter
 public class SettingDto {
     @Enumerated(EnumType.STRING)
-    private Setting.CandleMakePermission candleMakePermission;
+    private CandleCreatePermission candleMakePermission;
 
     @Enumerated(EnumType.STRING)
-    private Setting.CandleViewPermission candleViewPermission;
+    private CandleViewPermission candleViewPermission;
 
     private boolean candleCountPermission;
-}
+}*/

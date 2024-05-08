@@ -1,4 +1,4 @@
-package com.example.decoratemycakebackend.domain.cake.entity;
+/*package com.example.decoratemycakebackend.domain.cake.entity;
 
 import com.example.decoratemycakebackend.global.common.BaseEntity;
 import jakarta.persistence.*;
@@ -39,4 +39,4 @@ public class Setting extends BaseEntity {
     public enum CandleViewPermission {
         ANYONE, ONLY_ME
     }
-}
+}*/

@@ -1,5 +1,8 @@
 package com.example.decoratemycakebackend.domain.cake.dto;
 
+import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
+import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
+import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +16,9 @@ public class CakePutRequestDto {
     private String email;
     //private LocalDate createdAt;
     private String cakeName;
-    private SettingDto setting;
+    private CandleCreatePermission candleCreatePermission;
+    private CandleViewPermission candleViewPermission;
+    private CandleCountPermission candleCountPermission;
 
 
 }

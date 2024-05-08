@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface CakeRepository extends JpaRepository<Cake, Long> {
@@ -15,6 +16,8 @@ public interface CakeRepository extends JpaRepository<Cake, Long> {
     @Query("SELECT c FROM Cake c ORDER BY c.createdAt DESC")
     Cake findLatestByCreatedAt();
 
-    Optional<Cake> findByMemberEmail(String email);
+    List<Cake> findAllByMemberEmail(String email);
     Optional<Cake> findByMemberEmailAndCakeName(String email, String cakeName);
+
+    Optional<Cake> findByEmailAndCreatedYear(String email, int year);
 }
