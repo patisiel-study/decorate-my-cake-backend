@@ -12,17 +12,14 @@ import java.util.List;
 @Getter
 @Builder
 public class CakeCreateResponseDto {
-    private CakeSetting setting;
+    private String message;
     private String nickname;
     private String cakeName;
+    private String birthday;
     private int cakeCreatedYear;
     private List<Candle> candleList;
+    private CandleCreatePermission candleCreatePermission;
+    private CandleViewPermission candleViewPermission;
+    private CandleCountPermission candleCountPermission;
 
-    @Getter
-    @Builder
-    public static class CakeSetting {
-        private CandleCreatePermission candleCreatePermission;
-        private CandleViewPermission candleViewPermission;
-        private CandleCountPermission candleCountPermission;
-    }
 }
