@@ -17,7 +17,6 @@ public interface CakeRepository extends JpaRepository<Cake, Long> {
     Cake findLatestByCreatedAt();
 
     List<Cake> findAllByMemberEmail(String email);
-    Optional<Cake> findByMemberEmailAndCakeName(String email, String cakeName);
 
     Optional<Cake> findByEmailAndCreatedYear(String email, int year);
 }
