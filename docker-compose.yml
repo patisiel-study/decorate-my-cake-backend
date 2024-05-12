@@ -1,11 +1,6 @@
 version: '3'
 
 services:
-  app:
-    build:
-      context: .
-      args:
-        - gradle_args=/opt/gradle/bin/gradle build -x test
   springboot-app:
     image: astar5327/decorate-my-cake-backend
     container_name: springboot-container
