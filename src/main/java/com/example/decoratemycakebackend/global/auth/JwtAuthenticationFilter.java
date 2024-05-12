@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             return;
         }
 
+        if (requestURI.equals("/member/signup")) {
+            // 회원가입 요청은 JWT 토큰 검증을 건너뜀
+            chain.doFilter(request, response);
+            return;
+        }
+
         try {
             // 2. validateToken으로 토큰 유효성 검사
             if (token != null && jwtTokenProvider.validateToken(token)) {
