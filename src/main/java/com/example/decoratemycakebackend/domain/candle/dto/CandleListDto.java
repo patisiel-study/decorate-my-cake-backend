@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.candle.dto;
 
+import com.example.decoratemycakebackend.domain.candle.entity.Candle;
 import lombok.*;
 
 @Getter
@@ -16,5 +17,17 @@ public class CandleListDto {
     private String writer;
     private boolean isPrivate;
 
+    // Entity -> Dto
+    public static CandleListDto from(Candle candle) {
+        return new CandleListDto(
+                candle.getId(),
+                candle.getName(),
+                candle.getTitle(),
+                candle.getContent(),
+                candle.getCreatedAt().toString(),
+                candle.getWriter(),
+                candle.isPrivate()
+        );
+    }
 
 }
