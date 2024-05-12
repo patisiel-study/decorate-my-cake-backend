@@ -187,4 +187,9 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
+    // Redis에 저장된 RefreshToken을 삭제
+    public void deleteRefreshToken(String username) {
+        redisTemplate.delete(username);
+    }
 }
