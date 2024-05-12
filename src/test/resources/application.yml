@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;
+    url: jdbc:h2:mem:testdb
     username: sa
     password:
 
 jwt:
-  secret: d198050ec738b4fc1736fd70a19194c5ae714c677d0ff1e1a024f6d5edeef30bccea5487c434f3a22f403954cdbad49e5d401fe506803483b46260ce1500939a
+  secret: ${JWT_SECRET}
