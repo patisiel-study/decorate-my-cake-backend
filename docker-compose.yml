@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_URL=jdbc:postgresql://postgres-container:5432/decorate_my_cake
+      - DB_URL=jdbc:log4jdbc:postgresql://postgres-container:5432/decorate_my_cake
       - DB_USERNAME=postgres
       - JWT_SECRET=d198505ec738b4fc1736d7aa19194c58e7140677d8ff1e1a024f8a5eeef30bccfe85440f34322f4d35edeef30bbbe85440f34322f4d35e
       - DB_PASSWORD=1234
