@@ -2,6 +2,8 @@ version: '3'
 
 services:
   springboot-app:
+    env_file:
+      - .env
     image: astar5327/decorate-my-cake-backend
     container_name: springboot-container
     ports:
