@@ -4,7 +4,7 @@ services:
   springboot-app:
     env_file:
       - .env
-    image: astar5327/decorate-my-cake-backend
+    image: astar5327/decorate-my-cake-backend:latest
     container_name: springboot-container
     ports:
       - "8080:8080"
