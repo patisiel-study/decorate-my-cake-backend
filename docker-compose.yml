@@ -7,12 +7,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - JWT_SECRET=${JWT_SECRET}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - SPRING_REDIS_HOST=${SPRING_REDIS_HOST}
-      - SPRING_REDIS_PORT=${SPRING_REDIS_PORT}
+      - DB_URL=jdbc:postgresql://postgres-container:5432/decorate_my_cake
+      - DB_USERNAME=postgres
+      - JWT_SECRET=d198505ec738b4fc1736d7aa19194c58e7140677d8ff1e1a024f8a5eeef30bccfe85440f34322f4d35edeef30bbbe85440f34322f4d35e
+      - DB_PASSWORD=1234
+      - SPRING_REDIS_HOST=localhost
+      - SPRING_REDIS_PORT=6379
     depends_on:
       - postgres-db
       - redis
@@ -23,9 +23,9 @@ services:
     image: postgres
     container_name: postgres-container
     environment:
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=decorate_my_cake
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
     networks:
       - my-network
 
