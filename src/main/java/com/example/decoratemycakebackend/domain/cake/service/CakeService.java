@@ -52,7 +52,7 @@ public class CakeService {
             LocalDate createdAt = cake.getCreatedAt();
             List<Candle> candles = cake.getCandles();
             List<CandleListDto> candleListDtoList = candles.stream()
-                    .map(candle -> new CandleListDto(candle.getCandleId(), candle.getName(), candle.getTitle(), candle.getContent(), candle.getCandlecreatedAt(), candle.getWriter(), candle.isPrivate(),candle.getTotalcandlecount()))
+                    .map(candle -> new CandleListDto(candle.getCandleId(), candle.getTitle(), candle.getContent(), candle.getCandleCreatedAt(), candle.getWriter(), candle.isPrivate(),candle.getTotalcandlecount()))
                     .collect(Collectors.toList());
             int totalCandle = candleListDtoList.size();
 
@@ -330,7 +330,7 @@ public class CakeService {
         // 케이크 만들었다면 캔들 정보 일부만 공개
         List<CandleListDto> candleList = cake.getCandles().stream()
                 .map(candle -> CandleListDto.builder()
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .writer(candle.getWriter())
                         .build())
                 .collect(Collectors.toList());
@@ -370,10 +370,10 @@ public class CakeService {
     private CandleListDto toCandleListDto(Candle candle) {
         return CandleListDto.builder()
                 .candleId(candle.getCandleId())
-                .candleName(candle.getName())
+                //.candleName(candle.getName())
                 .candleTitle(candle.getTitle())
                 .candleContent(candle.getContent())
-                .candleCreatedAt(candle.getCandlecreatedAt())
+                .candleCreatedAt(candle.getCandleCreatedAt())
                 .writer(candle.getWriter())
                 .isPrivate(candle.isPrivate())
                 .build();
@@ -475,7 +475,7 @@ public class CakeService {
 
         List<CandleListDto> candleList = cake.getCandles().stream()
                 .map(candle -> CandleListDto.builder()
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .writer(candle.getWriter())
                         .isPrivate(candle.isPrivate()) //즉 비공개
                         .build())
@@ -497,7 +497,7 @@ public class CakeService {
 
         List<CandleListDto> candleList = cake.getCandles().stream()
                 .map(candle -> CandleListDto.builder()
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .writer(candle.getWriter())
                         .build())
                 .collect(Collectors.toList());

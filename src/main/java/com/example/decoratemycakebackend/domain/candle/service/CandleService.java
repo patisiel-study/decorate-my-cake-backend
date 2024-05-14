@@ -19,6 +19,8 @@ import com.example.decoratemycakebackend.global.util.ResponseDto;
 import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,11 +49,11 @@ public class CandleService {
                 //.candleId(requestDto.getCandleId())
                 .title(requestDto.getCandleTitle())
                 .content(requestDto.getCandleContent())
-                .name(requestDto.getCandleName())
+                //.name(requestDto.getCandleName())
                 .writer(requestDto.getWriter())
                 .isPrivate(requestDto.isPrivate())
                 .cake(cake) // cake 필드 설정
-                .candlecreatedAt(LocalDateTime.now())
+                .candleCreatedAt(LocalDateTime.now())
                 .build();
 
         candleRepository.save(candle);
@@ -61,10 +63,10 @@ public class CandleService {
 
         CandleListDto candleListDto = CandleListDto.builder()
                 .candleId(candle.getCandleId())
-                .candleName(candle.getName())
+                //.candleName(candle.getName())
                 .candleTitle(candle.getTitle())
                 .candleContent(candle.getContent())
-                .candleCreatedAt(candle.getCandlecreatedAt())
+                .candleCreatedAt(candle.getCandleCreatedAt())
                 .writer(candle.getWriter())
                 .isPrivate(candle.isPrivate())
                 .build();
@@ -89,11 +91,11 @@ public class CandleService {
             Candle candle = Candle.builder()
                     .title(requestDto.getCandleTitle())
                     .content(requestDto.getCandleContent())
-                    .name(requestDto.getCandleName())
+                    //.name(requestDto.getCandleName())
                     .writer(requestDto.getWriter())
                     .isPrivate(requestDto.isPrivate())
                     .cake(cake)
-                    .candlecreatedAt(LocalDateTime.now())
+                    .candleCreatedAt(LocalDateTime.now())
                     .build();
 
             Candle savedCandle = candleRepository.save(candle);
@@ -101,10 +103,10 @@ public class CandleService {
 
             CandleListDto candleListDto = CandleListDto.builder()
                     .candleId(savedCandle.getCandleId())
-                    .candleName(savedCandle.getName())
+                    //.candleName(savedCandle.getName())
                     .candleTitle(savedCandle.getTitle())
                     .candleContent(savedCandle.getContent())
-                    .candleCreatedAt(savedCandle.getCandlecreatedAt())
+                    .candleCreatedAt(savedCandle.getCandleCreatedAt())
                     .writer(savedCandle.getWriter())
                     .isPrivate(savedCandle.isPrivate())
                     .build();
@@ -116,19 +118,17 @@ public class CandleService {
         return new ResponseDto<>("캔들 작성 권한이 없습니다.", null);
     }
 
-    public ResponseDto<List<CandleListDto>> getCandle(CandleGetRequestDto requestDto) {
+    public Page<CandleListDto> getCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakecreatedYear())
+        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
-
-        List<Candle> candles = cake.getCandles();
-        List<CandleListDto> responseDtos = new ArrayList<>();
+        Page<Candle> candlePage = candleRepository.findByCake(cake, pageable);
         long totalCandleCount = candleRepository.totalcandlecount();
 
-        for (Candle candle : candles) {
+        return candlePage.map(candle -> {
             boolean view = false;
 
             if (cake.getCandleViewPermission() == CandleViewPermission.ANYONE) {
@@ -143,37 +143,35 @@ public class CandleService {
 
             if (cake.getCandleCountPermission() == CandleCountPermission.ONLY_ME && !currentMember.equals(cake.getMember())) {
                 view = false;
-            }//개수나와야함
+            }
 
             if (view) {
-                CandleListDto candleListDto = CandleListDto.builder()
+                return CandleListDto.builder()
                         .candleId(candle.getCandleId())
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .candleTitle(candle.getTitle())
                         .candleContent(candle.getContent())
-                        .candleCreatedAt(candle.getCandlecreatedAt())
-                        .totalcandlecount(totalCandleCount)
+                        .candleCreatedAt(candle.getCandleCreatedAt())
+                        .totalcandlecount(candlePage.getTotalElements())
                         .writer(candle.getWriter())
                         .isPrivate(candle.isPrivate())
                         .build();
-
-                responseDtos.add(candleListDto);
+            } else {
+                return new CandleListDto();
             }
-        }
-
-        return new ResponseDto<>("캔들 목록 조회 성공", responseDtos);
+        });
     }
 
     public ResponseDto<List<CandleListDto>> getDescCandle(CandleGetRequestDto requestDto) {
         Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakecreatedYear())
+        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
         //List<Candle> candles = cake.getCandles();
         //List<Candle> candles = candleRepository.findBySort(cake);
-        List<Candle> candles = candleRepository.findByCakeOrderByCandlecreatedAtDesc(cake);
+        List<Candle> candles = candleRepository.findByCakeOrderByCandleCreatedAtDesc(cake);
         long totalCandleCount = candleRepository.totalcandlecount();
 
         List<CandleListDto> responseDtos = new ArrayList<>();
@@ -200,10 +198,10 @@ public class CandleService {
             if (view) {
                 CandleListDto candleListDto = CandleListDto.builder()
                         .candleId(candle.getCandleId())
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .candleTitle(candle.getTitle())
                         .candleContent(candle.getContent())
-                        .candleCreatedAt(candle.getCandlecreatedAt())
+                        .candleCreatedAt(candle.getCandleCreatedAt())
                         .writer(candle.getWriter())
                         .totalcandlecount(totalCandleCount)
                         .isPrivate(candle.isPrivate())
@@ -220,11 +218,12 @@ public class CandleService {
         Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakecreatedYear())
+        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
         long totalCandleCount = candleRepository.totalcandlecount();
-        List<Candle> candles = candleRepository.findByCakeOrderByYearAndCandlecreatedAtDesc(cake);
+        List<Candle> candles = candleRepository.findByCakeOrderByYearAndCandleCreatedAtDesc(cake);
+
         List<CandleListDto> responseDtos = new ArrayList<>();
 
 
@@ -248,10 +247,10 @@ public class CandleService {
             if (view) {
                 CandleListDto candleListDto = CandleListDto.builder()
                         .candleId(candle.getCandleId())
-                        .candleName(candle.getName())
+                        //.candleName(candle.getName())
                         .candleTitle(candle.getTitle())
                         .candleContent(candle.getContent())
-                        .candleCreatedAt(candle.getCandlecreatedAt())
+                        .candleCreatedAt(candle.getCandleCreatedAt())
                         .writer(candle.getWriter())
                         .totalcandlecount(totalCandleCount)
                         .isPrivate(candle.isPrivate())

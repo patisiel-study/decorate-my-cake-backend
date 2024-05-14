@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class CandleGetResponseDto {
     private long candleId;
-    private String candleName;
+    //private String candleName;
     private String candleTitle;
     private String candleContent;
     private LocalDate candlecreatedAt;

@@ -27,7 +27,7 @@ public class Candle extends BaseEntity {
     private boolean isPrivate; // 비밀글이면 true, 공개글이면 false
     private String writer; // 기본적으로 작성자의 닉네임, 프론트 측에서 변경 가능함.
     @CreatedDate
-    private LocalDateTime candlecreatedAt;
+    private LocalDateTime candleCreatedAt;
     private long totalcandlecount;
 
     // isPrivate() getter 메서드 추가

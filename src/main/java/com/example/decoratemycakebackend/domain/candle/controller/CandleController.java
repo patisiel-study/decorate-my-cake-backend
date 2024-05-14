@@ -5,6 +5,10 @@ import com.example.decoratemycakebackend.domain.candle.service.CandleService;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,10 +39,21 @@ public class CandleController {
 
     @Operation(summary = "캔들 전체 가져오기", description = "캔들 가져오기")
     @GetMapping("/list")
-    public ResponseEntity<ResponseDto<List<CandleListDto>>> getCandle(@RequestParam String email, @RequestParam int cakecreatedYear) {
-        CandleGetRequestDto requestDto = new CandleGetRequestDto(email, cakecreatedYear);
-        ResponseDto<List<CandleListDto>> responseDto = candleService.getCandle(requestDto);
-        return ResponseEntity.ok(responseDto);
+    public ResponseEntity<ResponseDto<?>> getCandle(
+            @RequestParam String email,
+            @RequestParam int cakeCreatedYear,
+            @PageableDefault(size = 10, sort = "candleCreatedAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        CandleGetRequestDto requestDto = CandleGetRequestDto.builder()
+                .email(email)
+                .cakeCreatedYear(cakeCreatedYear)
+                .build();
+
+
+        Page<CandleListDto> candlePage = candleService.getCandle(requestDto, pageable);
+
+        return ResponseEntity.ok(new ResponseDto<>("캔들 전체 조회가 완료되었습니다.", candlePage));
+
     }
 
     @Operation(summary = "캔들 최신순으로 가져오기", description = "캔들 최신순으로 가져오기")

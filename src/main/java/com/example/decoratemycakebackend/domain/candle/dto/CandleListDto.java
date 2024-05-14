@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class CandleListDto {
     private Long candleId;
-    private String candleName;
+    //private String candleName;
     private String candleTitle;
     private String candleContent;
     private LocalDateTime candleCreatedAt;
