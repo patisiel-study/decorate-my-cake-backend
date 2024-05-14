@@ -14,7 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CakePutRequestDto {
     private String email;
-    //private LocalDate createdAt;
+    private int cakecreatedYear;
     private String cakeName;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;

@@ -13,6 +13,7 @@ import lombok.Setter;
 public class CakeCreateRequestDto {
     private String cakeName;
     private String email;
+    private int createdYear;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;
     private CandleCountPermission candleCountPermission;

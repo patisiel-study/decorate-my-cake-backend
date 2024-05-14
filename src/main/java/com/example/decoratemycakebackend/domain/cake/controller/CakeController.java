@@ -44,7 +44,7 @@ public class CakeController {
 
     @Operation(summary = "케이크 생성", description = "케이크 생성")
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto<?>> createFriendRequest(@Valid @RequestBody CakeCreateRequestDto request) {
+    public ResponseEntity<ResponseDto<?>> createCakeRequest(@Valid @RequestBody CakeCreateRequestDto request) {
         return ResponseEntity.ok(new ResponseDto<>("케이크 생성이 완료되었습니다.", cakeService.createCake(request)));
     }
 
@@ -55,7 +55,7 @@ public class CakeController {
     }
 
     @GetMapping("/friends/view")
-    public ResponseEntity<List<CakeViewFriendResponseDto>> getCakesForFriend(@PathVariable String friendEmail) {
+    public ResponseEntity<List<CakeViewFriendResponseDto>> getCakesForFriend(@RequestParam String friendEmail) {
         List<CakeViewFriendResponseDto> responseDtos = cakeService.getCakesForFriend(friendEmail);
         return ResponseEntity.ok(responseDtos);
     }

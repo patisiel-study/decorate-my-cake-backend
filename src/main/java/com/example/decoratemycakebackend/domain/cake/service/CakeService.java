@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,6 +43,7 @@ public class CakeService {
         List<Cake> cakes = cakeRepository.findAllByMemberEmail(email);
 
         List<CakeGetResponseDto> responseDtos = new ArrayList<>();
+        
 
         for (Cake cake : cakes) {
             String nickname = member.getNickname();
@@ -52,7 +52,7 @@ public class CakeService {
             LocalDate createdAt = cake.getCreatedAt();
             List<Candle> candles = cake.getCandles();
             List<CandleListDto> candleListDtoList = candles.stream()
-                    .map(candle -> new CandleListDto(candle.getId(), candle.getName(), candle.getTitle(), candle.getContent(), candle.getCreatedAt().toString(), candle.getWriter(), candle.isPrivate()))
+                    .map(candle -> new CandleListDto(candle.getCandleId(), candle.getName(), candle.getTitle(), candle.getContent(), candle.getCandlecreatedAt(), candle.getWriter(), candle.isPrivate(),candle.getTotalcandlecount()))
                     .collect(Collectors.toList());
             int totalCandle = candleListDtoList.size();
 
@@ -113,15 +113,8 @@ public class CakeService {
         Member member = memberRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Cake cake = cakeRepository.findByMemberEmailAndCakeName(requestDto.getEmail(), requestDto.getCakeName())
+        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakecreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
-
-        // Setting 객체가 null인 경우 새로 생성하고 Cake 엔티티에 설정
-        /*if (cake.getSetting() == null) {
-            Setting setting = new Setting();
-            setting.setCake(cake);
-            cake.setSetting(setting);
-        }*/
 
         // 권한 필드 업데이트
         cake.setCandleCreatePermission(requestDto.getCandleCreatePermission());
@@ -147,37 +140,48 @@ public class CakeService {
         Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakecreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
-
-        //    Cake cake = cakeRepository.findByMemberEmailAndCreatedAt(requestDto.getEmail(), requestDto.getCreatedAt())
-        //            .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
-
         cakeRepository.delete(cake);
-        return new ResponseDto<>("케이크 삭제", null); //전체 케이크 다 불러오기 밑에 // 특정 년도에 대한 케이크 정보는 케이크 이미지 라이트 다 // 4가지
+
+        return new ResponseDto<>("케이크 삭제", null);
     }
 
     public CakeCreateResponseDto createCake(CakeCreateRequestDto request) {
-
         // 프론트에서 보낸 email과 로그인 된 유저의 email 일치 여부 확인
         String email = SecurityUtil.getCurrentUserEmail();
         validateEmailMatch(email, request.getEmail());
+
         // 멤버 정보 DB에서 조회
         Member member = getMember(email);
+
+        // 해당 연도에 대한 케이크가 이미 존재하는지 확인
+        int createdYear = request.getCreatedYear();
+        if (cakeRepository.existsByEmailAndCreatedYear(email, createdYear)) {
+            throw new CustomException(ErrorCode.CAKE_ALREADY_EXISTS);
+        }
+
         // 케이크 정보 생성
-        Cake cake = createCake(request, member, email);
+        Cake cake = createCake(request, member, email, createdYear);
+
         // DB에 정보 저장후 멤버 정보 업데이트
         saveCakeAndUpdateMember(cake, member);
+
         // 케이크 설정 정보 생성
         CakeCreateResponseDto.CakeSetting cakeSetting = createCakeSetting(cake);
+
         // 케이크 정보 및 설정 정보 반환
         return createCakeCreateResponseDto(cakeSetting, cake);
     }
-
     public CakeViewResponseDto getCakeAndCandles(CakeViewRequestDto request) {
         // 친구의 케이크를 조회할 수도 있으므로 로그인 한 유저의 이메일과 일치 여부 확인하지 않음
         String email = request.getEmail();
 
         Member member = getMember(email);
         Cake cake = getCake(email, request.getCakeCreatedYear());
+
+        // 케이크가 존재하지 않는 경우 예외 처리
+        if (cake == null) {
+            throw new CustomException(ErrorCode.CAKE_NOT_FOUND);
+        }
 
         // 생일까지 남은기간 계산
         LocalDate today = LocalDate.now();
@@ -200,12 +204,12 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private Cake createCake(CakeCreateRequestDto request, Member member, String email) {
+    private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear) {
         return Cake.builder()
                 .cakeName(request.getCakeName())
                 .member(member)
                 .email(email)
-                .createdYear(LocalDateTime.now().getYear())
+                .createdYear(createdYear)
                 .candleCreatePermission(request.getCandleCreatePermission())
                 .candleViewPermission(request.getCandleViewPermission())
                 .candleCountPermission(request.getCandleCountPermission())
@@ -365,11 +369,11 @@ public class CakeService {
 
     private CandleListDto toCandleListDto(Candle candle) {
         return CandleListDto.builder()
-                .candleId(candle.getId())
+                .candleId(candle.getCandleId())
                 .candleName(candle.getName())
                 .candleTitle(candle.getTitle())
                 .candleContent(candle.getContent())
-                .candleCreatedAt(candle.getCreatedAt().toString())
+                .candleCreatedAt(candle.getCandlecreatedAt())
                 .writer(candle.getWriter())
                 .isPrivate(candle.isPrivate())
                 .build();
@@ -490,6 +494,13 @@ public class CakeService {
 
     private CakeViewFriendResponseDto getFriendMinimalCakeViewResponseDto(Member friend, LocalDate birthday, int cakeCreatedYear, Cake cake) { //CandleViewPermission.ONLY_ME
         CakeViewFriendResponseDto.CakeSetting cakeSetting = createCakeViewFriendResponseDtoCakeSetting(cake);
+
+        List<CandleListDto> candleList = cake.getCandles().stream()
+                .map(candle -> CandleListDto.builder()
+                        .candleName(candle.getName())
+                        .writer(candle.getWriter())
+                        .build())
+                .collect(Collectors.toList());
 
         return CakeViewFriendResponseDto.builder()
                 .nickname(friend.getNickname())
