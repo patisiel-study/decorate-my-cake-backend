@@ -36,6 +36,7 @@ public enum ErrorCode {
     EMAIL_DUPLICATION(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
     ALREADY_FRIEND(HttpStatus.CONFLICT, "이미 친구로 추가된 회원입니다."),
     NOT_FRIEND(HttpStatus.BAD_REQUEST, "친구 관계가 아닙니다."),
+    CAKE_ALREADY_EXISTS(HttpStatus.NOT_FOUND,"케이크가 이미 있습니다"),
     DUPLICATE_FRIEND_REQUEST(HttpStatus.CONFLICT, "이미 친구 요청을 보낸 상태입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 회원을 찾을 수 없습니다."),
     CAKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 케이크를 찾을 수 없습니다."),

@@ -17,5 +17,8 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
     List<FriendRequest> findAcceptedFriendRequestsByMember(@Param("member") Member member);
 
     List<FriendRequest> findByReceiverAndStatus(Member receiver, FriendRequestStatus status);
+
     Optional<FriendRequest> findBySenderAndReceiverAndStatus(Member sender, Member receiver, FriendRequestStatus status);
+
+
 }

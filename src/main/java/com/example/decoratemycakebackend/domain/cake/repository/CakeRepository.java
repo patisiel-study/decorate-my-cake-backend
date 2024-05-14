@@ -20,4 +20,9 @@ public interface CakeRepository extends JpaRepository<Cake, Long> {
     Optional<Cake> findByMemberEmailAndCakeName(String email, String cakeName);
 
     Optional<Cake> findByEmailAndCreatedYear(String email, int year);
+    boolean existsByEmailAndCreatedYear(String email, int createdYear);
+
+    Optional<Cake> findByMemberEmail(String email);
+
+
 }
