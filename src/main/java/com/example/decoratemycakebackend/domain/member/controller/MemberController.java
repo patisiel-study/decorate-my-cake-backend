@@ -38,11 +38,12 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "사용자 없음")
     })
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<JwtToken>> logIn(LogInDto logInDto) {
+    public ResponseEntity<ResponseDto<JwtToken>> logIn(@RequestBody LogInDto logInDto) {
         String email = logInDto.getEmail();
         String password = logInDto.getPassword();
 
-
+        log.debug("before validation email = {}", email);
+        log.debug("before validation password = {}", password);
         JwtToken jwtToken = memberService.logIn(email, password);
         log.debug("request email = {}, password = {}", email, password);
         log.debug("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
