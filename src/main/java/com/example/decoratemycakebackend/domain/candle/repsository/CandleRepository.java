@@ -16,13 +16,9 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
 
     Optional<Candle> findById(Long candleId);
 
-    //List<Candle> findBySort(Cake cake);
-
     @Query("SELECT COUNT(c) FROM Candle c")
     long totalcandlecount();
 
-    //최신순
-    //List<Candle> findByCakeOrderByCandleCreatedAtDesc(Cake cake);
     Page<Candle> findByCakeOrderByCandleCreatedAtDesc(Cake cake, Pageable pageable);
 
     Page<Candle> findByCakeOrderByCandleCreatedAtAsc(Cake cake, Pageable pageable);

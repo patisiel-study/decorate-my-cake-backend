@@ -21,4 +21,5 @@ public class CandleGetResponseDto {
     private String writer;
     private boolean isPrivate;
     private int totalCandleCount;
+
 }

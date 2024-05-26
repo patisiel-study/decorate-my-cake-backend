@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CandleAddRequestDto {
-    //private long candleId;
     private String candleTitle;
     private String candleContent;
     private String candleName;

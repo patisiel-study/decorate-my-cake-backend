@@ -31,7 +31,6 @@ public class Candle extends BaseEntity {
     private long totalCandleCount;
     private String message;
 
-    // isPrivate() getter 메서드 추가
     public boolean isPrivate() {
         return isPrivate;
     }

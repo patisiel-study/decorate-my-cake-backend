@@ -12,5 +12,4 @@ import lombok.Setter;
 
 public class CandleDeleteRequestDto {
     private long candleId;
-    //private LocalDate createdAt;
 }

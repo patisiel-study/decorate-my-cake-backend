@@ -10,4 +10,5 @@ import lombok.*;
 public class CandleGetRequestDto {
     private String email;
     private int cakeCreatedYear;
+
 }

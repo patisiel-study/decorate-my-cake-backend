@@ -53,7 +53,7 @@ public class CandleService {
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FRIEND));
         }
 
-        // 캔들 생성 로직 진행
+        // 캔들 생성하기
         Candle candle = Candle.builder()
                 .CandleTitle(requestDto.getCandleTitle())
                 .CandleContent(requestDto.getCandleContent())

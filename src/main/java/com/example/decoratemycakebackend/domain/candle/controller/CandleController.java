@@ -153,7 +153,7 @@ public class CandleController {
     }
 
 
-    @Operation(summary = "캔들 하나 삭제", description = "캔들 id로 삭제하기")
+    @Operation(summary = "캔들 한개 삭제", description = "캔들 id로 삭제하기")
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto<List<CandleListDto>>> deleteCandle(@RequestBody CandleDeleteRequestDto requestDto) {
         candleService.deleteCandle(requestDto);
