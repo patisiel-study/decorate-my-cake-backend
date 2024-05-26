@@ -22,16 +22,20 @@ public interface CandleRepository extends JpaRepository<Candle, Long> {
     long totalcandlecount();
 
     //최신순
-    List<Candle> findByCakeOrderByCandleCreatedAtDesc(Cake cake);
+    //List<Candle> findByCakeOrderByCandleCreatedAtDesc(Cake cake);
+    Page<Candle> findByCakeOrderByCandleCreatedAtDesc(Cake cake, Pageable pageable);
+
+    Page<Candle> findByCakeOrderByCandleCreatedAtAsc(Cake cake, Pageable pageable);
 
     //년도
     @Query("SELECT c FROM Candle c WHERE c.cake = :cake ORDER BY YEAR(c.candleCreatedAt) DESC, c.candleCreatedAt DESC")
-    List<Candle> findByCakeOrderByYearAndCandleCreatedAtDesc(@Param("cake") Cake cake);
+    Page<Candle> findByCakeOrderByYearAndCandleCreatedAtDesc(@Param("cake") Cake cake, Pageable pageable);
 
     @Query("SELECT c FROM Candle c WHERE c.cake = :cake ORDER BY YEAR(c.candleCreatedAt) ASC, c.candleCreatedAt ASC")
-    List<Candle> findByCakeOrderByYearAndCandleCreatedAtAsc(@Param("cake") Cake cake);
+    Page<Candle> findByCakeOrderByYearAndCandleCreatedAtAsc(@Param("cake") Cake cake, Pageable pageable);
 
     Page<Candle> findByCake(Cake cake, Pageable pageable);
 
+    long countByCake(Cake cake);
 
 }

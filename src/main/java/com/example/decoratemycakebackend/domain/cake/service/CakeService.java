@@ -52,7 +52,7 @@ public class CakeService {
             LocalDate createdAt = cake.getCreatedAt();
             List<Candle> candles = cake.getCandles();
             List<CandleListDto> candleListDtoList = candles.stream()
-                    .map(candle -> new CandleListDto(candle.getCandleId(), candle.getTitle(), candle.getContent(), candle.getCandleCreatedAt(), candle.getWriter(), candle.isPrivate(),candle.getTotalcandlecount()))
+                    .map(candle -> new CandleListDto(candle.getCandleId(), candle.getCandleTitle(), candle.getCandleContent(), candle.getCandleCreatedAt(), candle.getWriter(), candle.isPrivate(),candle.getTotalCandleCount(), candle.getMessage()))
                     .collect(Collectors.toList());
             int totalCandle = candleListDtoList.size();
 
@@ -74,39 +74,6 @@ public class CakeService {
 
         return responseDtos;
     }
-
-    /*
-    //모든 케이크 list로 2022 2023 dto로 반환 케이크에 대한 정보를 캔들 리스트로 케이크 리스트로
-    public ResponseDto<CakeAddResponseDto> addCake(CakeAddRequestDto requestDto) {
-        Member currentMember = memberRepository.findByEmail(requestDto.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        Cake cake = Cake.builder()
-                .cakeName(requestDto.getCakeName())
-                .member(currentMember)
-                .createdYear(LocalDateTime.now().getYear())
-                .candleCreatePermission(requestDto.getCandleCreatePermission())
-                .candleViewPermission(requestDto.getCandleViewPermission())
-                .candleCountPermission(requestDto.getCandleCountPermission())
-                .candles(Collections.emptyList())
-                .build();
-
-        cakeRepository.save(cake);
-
-        List<CandleListDto> candleList = new ArrayList<>();
-        int totalCandle = 0;
-
-        CakeAddResponseDto.CakeSetting setting = CakeAddResponseDto.CakeSetting.builder()
-                .candleCreatePermission(requestDto.getCandleCreatePermission())
-                .candleViewPermission(requestDto.getCandleViewPermission())
-                .candleCountPermission(requestDto.getCandleCountPermission())
-                .build();
-
-        CakeAddResponseDto responseData = new CakeAddResponseDto(currentMember.getNickname(), cake.getCakeName(), cake.getCreatedYear(), candleList, totalCandle, setting);
-
-        return new ResponseDto<>("다가오는 생일의 기쁨을 함께 할 케이크를 만들었습니다. 캔들의 편지는 생일 당일부터 열람 가능합니다!", responseData);
-    }
-    */
 
 
     public CakePutResponseDto updateCake(CakePutRequestDto requestDto) {
@@ -371,8 +338,8 @@ public class CakeService {
         return CandleListDto.builder()
                 .candleId(candle.getCandleId())
                 //.candleName(candle.getName())
-                .candleTitle(candle.getTitle())
-                .candleContent(candle.getContent())
+                .candleTitle(candle.getCandleTitle())
+                .candleContent(candle.getCandleContent())
                 .candleCreatedAt(candle.getCandleCreatedAt())
                 .writer(candle.getWriter())
                 .isPrivate(candle.isPrivate())
