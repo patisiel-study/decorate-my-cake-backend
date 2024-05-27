@@ -16,7 +16,8 @@ public class CandleAddResponseDto {
     private String candleName;
     private String candleTitle;
     private String candleContent;
-    private LocalDate candlecreatedAt;
+    private LocalDate candleCreatedAt;
     private String writer;
     private boolean isPrivate;
 }
+
