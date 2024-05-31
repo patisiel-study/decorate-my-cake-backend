@@ -2,21 +2,20 @@ package com.example.decoratemycakebackend.domain.candle.dto;
 
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CandleListDto {
-    private Long candleId;
+public class CandleAddResponseDto {
+    private long candleId;
+    private String candleName;
     private String candleTitle;
     private String candleContent;
-    private LocalDateTime candleCreatedAt;
+    private LocalDate candleCreatedAt;
     private String writer;
     private boolean isPrivate;
-    private long totalCandleCount;
-    private String message;
 }
 
