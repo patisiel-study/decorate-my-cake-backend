@@ -15,7 +15,6 @@ public class CandleAddRequestDto {
     private String candleName;
     private boolean isPrivate;
     private String writer;
-    private String cakeowneremail;
+    private String cakeOwnerEmail;
     private int cakeCreatedYear;
-//test
 }

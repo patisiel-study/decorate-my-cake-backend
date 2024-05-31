@@ -5,10 +5,7 @@ import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermissio
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
 import com.example.decoratemycakebackend.domain.cake.repository.CakeRepository;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleAddRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleDeleteRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleGetRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleListDto;
+import com.example.decoratemycakebackend.domain.candle.dto.*;
 import com.example.decoratemycakebackend.domain.candle.entity.Candle;
 import com.example.decoratemycakebackend.domain.candle.repsository.CandleRepository;
 import com.example.decoratemycakebackend.domain.friend.entity.FriendRequest;
@@ -43,7 +40,7 @@ public class CandleService {
         Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getCakeowneremail(), requestDto.getCakeCreatedYear())
+        Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getCakeOwnerEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
         // 케이크의 CandleCreatePermission 확인
@@ -77,7 +74,7 @@ public class CandleService {
                 .build();
     }
 
-    public Page<CandleListDto> getCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public messageDto getCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -88,20 +85,21 @@ public class CandleService {
         Page<Candle> candlePage = candleRepository.findByCake(cake, pageable);
         long totalCandleCount = candleRepository.countByCake(cake);
 
-        return candlePage.map(candle -> CandleListDto.builder()
-                .candleId(candle.getCandleId())
-                .candleTitle(candle.getCandleTitle())
+        Page<CandleListDto> candleListDtoPage = candlePage.map(candle -> CandleListDto.builder()
+                .candleId(canViewCandle ? candle.getCandleId() : null)
+                .candleTitle(canViewCandle ? candle.getCandleTitle() : null)
                 .candleContent(canViewCandle ? candle.getCandleContent() : null)
-                .candleCreatedAt(candle.getCandleCreatedAt())
+                .candleCreatedAt(canViewCandle ? candle.getCandleCreatedAt() : null)
                 .totalCandleCount(canViewCandleCount ? totalCandleCount : 0)
                 .writer(canViewCandle ? candle.getWriter() : null)
                 .isPrivate(canViewCandle && candle.isPrivate())
-                .message(message)
                 .build());
+
+        return new messageDto(message, candleListDtoPage);
     }
 
 
-    public Page<CandleListDto> getDescCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public messageDto getDescCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -112,19 +110,20 @@ public class CandleService {
         Page<Candle> candlePage = candleRepository.findByCakeOrderByCandleCreatedAtDesc(cake, pageable);
         long totalCandleCount = candleRepository.countByCake(cake);
 
-        return candlePage.map(candle -> CandleListDto.builder()
-                .candleId(candle.getCandleId())
+        Page<CandleListDto> candleListDtoPage = candlePage.map(candle -> CandleListDto.builder()
+                .candleId(canViewCandle ? candle.getCandleId() : null)
                 .candleTitle(canViewCandle ? candle.getCandleTitle() : null)
                 .candleContent(canViewCandle ? candle.getCandleContent() : null)
-                .candleCreatedAt(candle.getCandleCreatedAt())
+                .candleCreatedAt(canViewCandle ? candle.getCandleCreatedAt() : null)
                 .totalCandleCount(canViewCandleCount ? totalCandleCount : 0)
                 .writer(canViewCandle ? candle.getWriter() : null)
                 .isPrivate(canViewCandle && candle.isPrivate())
-                .message(message)
                 .build());
+
+        return new messageDto(message, candleListDtoPage);
     }
 
-    public Page<CandleListDto> getYearAscCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public messageDto getYearAscCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -135,19 +134,20 @@ public class CandleService {
         Page<Candle> candlePage = candleRepository.findByCakeOrderByYearAndCandleCreatedAtAsc(cake, pageable);
         long totalCandleCount = candleRepository.countByCake(cake);
 
-        return candlePage.map(candle -> CandleListDto.builder()
-                .candleId(candle.getCandleId())
+        Page<CandleListDto> candleListDtoPage = candlePage.map(candle -> CandleListDto.builder()
+                .candleId(canViewCandle ?candle.getCandleId(): null)
                 .candleTitle(canViewCandle ? candle.getCandleTitle() : null)
                 .candleContent(canViewCandle ? candle.getCandleContent() : null)
-                .candleCreatedAt(candle.getCandleCreatedAt())
+                .candleCreatedAt(canViewCandle ? candle.getCandleCreatedAt() : null)
                 .totalCandleCount(canViewCandleCount ? totalCandleCount : 0)
                 .writer(canViewCandle ? candle.getWriter() : null)
                 .isPrivate(canViewCandle && candle.isPrivate())
-                .message(message)
                 .build());
+        return new messageDto(message, candleListDtoPage);
     }
+
     //오래된순으로만
-    public Page<CandleListDto> getAscCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public messageDto getAscCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -158,19 +158,19 @@ public class CandleService {
         Page<Candle> candlePage = candleRepository.findByCakeOrderByCandleCreatedAtAsc(cake, pageable);
         long totalCandleCount = candleRepository.countByCake(cake);
 
-        return candlePage.map(candle -> CandleListDto.builder()
-                .candleId(candle.getCandleId())
+        Page<CandleListDto> candleListDtoPage = candlePage.map(candle -> CandleListDto.builder()
+                .candleId(canViewCandle ? candle.getCandleId() : null)
                 .candleTitle(canViewCandle ? candle.getCandleTitle() : null)
                 .candleContent(canViewCandle ? candle.getCandleContent() : null)
-                .candleCreatedAt(candle.getCandleCreatedAt())
-                .totalCandleCount(canViewCandleCount ? totalCandleCount : 0)
+                .candleCreatedAt(canViewCandle ? candle.getCandleCreatedAt() : null)
                 .writer(canViewCandle ? candle.getWriter() : null)
                 .isPrivate(canViewCandle && candle.isPrivate())
-                .message(message)
                 .build());
+
+        return new messageDto(message, candleListDtoPage);
     }
 
-    public Page<CandleListDto> getYearDescCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public messageDto getYearDescCandle(CandleGetRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -181,18 +181,18 @@ public class CandleService {
         Page<Candle> candlePage = candleRepository.findByCakeOrderByYearAndCandleCreatedAtDesc(cake, pageable);
         long totalCandleCount = candleRepository.countByCake(cake);
 
-        return candlePage.map(candle -> CandleListDto.builder()
-                .candleId(candle.getCandleId())
+        Page<CandleListDto> candleListDtoPage = candlePage.map(candle -> CandleListDto.builder()
+                .candleId(canViewCandle ? candle.getCandleId() : null)
                 .candleTitle(canViewCandle ? candle.getCandleTitle() : null)
                 .candleContent(canViewCandle ? candle.getCandleContent() : null)
-                .candleCreatedAt(candle.getCandleCreatedAt())
+                .candleCreatedAt(canViewCandle ? candle.getCandleCreatedAt() : null)
                 .totalCandleCount(canViewCandleCount ? totalCandleCount : 0)
                 .writer(canViewCandle ? candle.getWriter() : null)
                 .isPrivate(canViewCandle && candle.isPrivate())
-                .message(message)
                 .build());
-    }
 
+        return new messageDto(message, candleListDtoPage);
+    }
 
     private Member getCurrentMember() {
         return memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
@@ -231,6 +231,14 @@ public class CandleService {
             return "권한이 없습니다.";
         }
     }
+
+    /*private String getCreateCandleMessage(Cake cake) {
+        if (cake.getCandleCreatePermission() == CandleCreatePermission.ONLY_FRIENDS) {
+            return "이 케이크는 친구만 작성할 수 있습니다.";
+        } else {
+            return null;
+        }
+    }*/
 
 
     public ResponseDto<CandleListDto> deleteCandle(CandleDeleteRequestDto requestDto) {

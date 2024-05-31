@@ -1,13 +1,9 @@
 package com.example.decoratemycakebackend.domain.candle.controller;
 
-import com.example.decoratemycakebackend.domain.candle.dto.CandleAddRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleDeleteRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleGetRequestDto;
-import com.example.decoratemycakebackend.domain.candle.dto.CandleListDto;
+import com.example.decoratemycakebackend.domain.candle.dto.*;
 import com.example.decoratemycakebackend.domain.candle.service.CandleService;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -31,11 +27,10 @@ public class CandleController {
         CandleListDto candleListDto = candleService.addCandle(requestDto);
         return ResponseEntity.ok(new ResponseDto<>("캔들이 성공적으로 생성되었습니다.", candleListDto));
     }
-    @Operation(summary = "캔들 전체 가져오기", description = "페이지 0 만약 사이즈10이 넘어가면 1로 적으면 됨,\n\n" +
-            "사이즈 10 (한 페이지에 10개 출력 고정), \" \" 정렬은 최신순\n\n" +
-            "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-            "만약 candleViewPermission이 only_me인데 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-            "candleViewPermission이 only_friends인데 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
+
+    @Operation(summary = "캔들 전체 가져오기", description = "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
+            "candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
+            "candleViewPermission이 only_friends 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
             "다 아니면 메세지에 권한이 없습니다")
     @GetMapping("/list")
     public ResponseEntity<ResponseDto<?>> getCandle(
@@ -49,18 +44,17 @@ public class CandleController {
                 .build();
 
 
-        Page<CandleListDto> candlePage = candleService.getCandle(requestDto, pageable);
+        //Page<CandleListDto> candlePage = candleService.getCandle(requestDto, pageable);
+        messageDto messageDto = candleService.getCandle(requestDto, pageable);
 
-        return ResponseEntity.ok(new ResponseDto<>("캔들 전체 조회가 완료되었습니다.", candlePage));
+        return ResponseEntity.ok(new ResponseDto<>("캔들 전체 조회가 완료되었습니다.", messageDto));
 
     }
 
 
-    @Operation(summary = "캔들 최신순으로 정렬", description = "페이지 0 만약 사이즈10이 넘어가면 1로 적으면 됨,\n\n" +
-            "사이즈 10 (한 페이지에 10개 출력 고정), \" \" 정렬은 최신순\n\n" +
-            "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-            "만약 candleViewPermission이 only_me인데 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-            "candleViewPermission이 only_friends인데 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
+    @Operation(summary = "캔들 최신순으로 정렬", description = "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
+            "candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
+            "candleViewPermission이 only_friends 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
             "다 아니면 메세지에 권한이 없습니다")
     @GetMapping("/desc")
     public ResponseEntity<ResponseDto<?>> getDescCandle(
@@ -74,18 +68,17 @@ public class CandleController {
                 .build();
 
 
-        Page<CandleListDto> candlePage = candleService.getDescCandle(requestDto, pageable);
+        //Page<CandleListDto> candlePage = candleService.getDescCandle(requestDto, pageable);
+        messageDto messageDto = candleService.getDescCandle(requestDto, pageable);
 
-        return ResponseEntity.ok(new ResponseDto<>("캔들 최신순으로 조회가 완료되었습니다.", candlePage));
+        return ResponseEntity.ok(new ResponseDto<>("캔들 최신순으로 조회가 완료되었습니다.", messageDto));
 
     }
 
 
-    @Operation(summary = "캔들 년도중 오래된순으로 정렬", description = "페이지 0 만약 사이즈10이 넘어가면 1로 적으면 됨,\n\n" +
-            "사이즈 10 (한 페이지에 10개 출력 고정), \" \" 정렬은 최신순\n\n" +
-            "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-            "만약 candleViewPermission이 only_me인데 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-            "candleViewPermission이 only_friends인데 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
+    @Operation(summary = "캔들 년도중 오래된순으로 정렬", description = "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
+            "candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
+            "candleViewPermission이 only_friends 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
             "다 아니면 메세지에 권한이 없습니다")
     @GetMapping("/year/asc")
     public ResponseEntity<ResponseDto<?>> getYearAscCandle(
@@ -99,17 +92,16 @@ public class CandleController {
                 .build();
 
 
-        Page<CandleListDto> candlePage = candleService.getYearAscCandle(requestDto, pageable);
+        //Page<CandleListDto> candlePage = candleService.getYearAscCandle(requestDto, pageable);
+        messageDto messageDto = candleService.getYearAscCandle(requestDto, pageable);
 
-        return ResponseEntity.ok(new ResponseDto<>("캔들 오래된순으로 조회가 완료되었습니다.", candlePage));
+        return ResponseEntity.ok(new ResponseDto<>("캔들 오래된순으로 조회가 완료되었습니다.", messageDto));
 
     }
-    @Operation(summary = "캔들 오래된순으로 정렬", description = "페이지 0 만약 사이즈10이 넘어가면 1로 적으면 됨,\n\n" +
-            "사이즈 10 (한 페이지에 10개 출력 고정), \" \" 정렬은 최신순\n\n" +
-            "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-            "만약 candleViewPermission이 only_me인데 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-            "candleViewPermission이 only_friends인데 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
-            "다 아니면 메세지에 권한이 없습니다")
+    @Operation(summary = "캔들 오래된순으로 정렬", description = "page: 0, size: 10, sort: candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
+            "candleViewPermission이 ONLY_ME이면 다른 사람 접근 시 '이 케이크는 케이크 주인만 볼 수 있습니다.' 메시지 표시,\n\n" +
+            "candleViewPermission이 ONLY_FRIENDS이면 친구가 아닌 사람 접근 시 '이 케이크는 친구만 볼 수 있습니다.' 메시지 표시,\n\n" +
+            "그 외의 경우에는 '권한이 없습니다.' 메시지 표시")
     @GetMapping("/asc")
     public ResponseEntity<ResponseDto<?>> getAscCandle(
             @RequestParam String email,
@@ -121,18 +113,14 @@ public class CandleController {
                 .cakeCreatedYear(cakeCreatedYear)
                 .build();
 
+        messageDto messageDto = candleService.getAscCandle(requestDto, pageable);
 
-        Page<CandleListDto> candlePage = candleService.getAscCandle(requestDto, pageable);
-
-        return ResponseEntity.ok(new ResponseDto<>("캔들 오래된순으로 조회가 완료되었습니다.", candlePage));
-
+        return ResponseEntity.ok(new ResponseDto<>("캔들 오래된순으로 조회가 완료되었습니다.", messageDto));
     }
 
-    @Operation(summary = "캔들 년도별 최신순으로 정렬", description = "페이지 0 만약 사이즈10이 넘어가면 1로 적으면 됨,\n\n" +
-            "사이즈 10 (한 페이지에 10개 출력 고정), \" \" 정렬은 최신순\n\n" +
-            "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-            "만약 candleViewPermission이 only_me인데 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-            "candleViewPermission이 only_friends인데 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
+    @Operation(summary = "캔들 년도별 최신순으로 정렬", description = "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
+            "candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
+            "candleViewPermission이 only_friends 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
             "다 아니면 메세지에 권한이 없습니다")
     @GetMapping("/year/desc")
     public ResponseEntity<ResponseDto<?>> getYearCandle(
@@ -146,9 +134,10 @@ public class CandleController {
                 .build();
 
 
-        Page<CandleListDto> candlePage = candleService.getYearDescCandle(requestDto, pageable);
+        //Page<CandleListDto> candlePage = candleService.getYearDescCandle(requestDto, pageable);
+        messageDto messageDto = candleService.getYearDescCandle(requestDto, pageable);
 
-        return ResponseEntity.ok(new ResponseDto<>("캔들 년도별 조회가 완료되었습니다.", candlePage));
+        return ResponseEntity.ok(new ResponseDto<>("캔들 년도별 조회가 완료되었습니다.", messageDto));
 
     }
 
