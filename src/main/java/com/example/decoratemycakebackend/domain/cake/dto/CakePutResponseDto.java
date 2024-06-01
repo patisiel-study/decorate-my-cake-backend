@@ -3,15 +3,13 @@ package com.example.decoratemycakebackend.domain.cake.dto;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CakePutResponseDto {
     private String cakeName;
     private CandleCreatePermission candleCreatePermission;

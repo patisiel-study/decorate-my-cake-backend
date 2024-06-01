@@ -57,4 +57,12 @@ public class Cake extends BaseEntity {
         return getCreatedAt().getYear();
     }
 
+    public void updatePermissions(CandleCreatePermission candleCreatePermission,
+                                  CandleViewPermission candleViewPermission,
+                                  CandleCountPermission candleCountPermission) {
+        this.candleCreatePermission = candleCreatePermission;
+        this.candleViewPermission = candleViewPermission;
+        this.candleCountPermission = candleCountPermission;
+    }
+
 }
