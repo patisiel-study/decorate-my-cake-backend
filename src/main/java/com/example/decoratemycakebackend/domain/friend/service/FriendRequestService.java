@@ -145,4 +145,12 @@ public class FriendRequestService {
         friendRequestRepository.save(deletedRequest);
         log.info("Friendship deleted between {} and {}", currentMember.getEmail(), friendMember.getEmail());
     }
+
+    // 친구 관계 양방향으로 확인하고 그래도 없으면 false 반환
+    public boolean isFriend(Member currentMember, Member someone) {
+        return friendRequestRepository.findBySenderAndReceiverAndStatus(someone, currentMember, FriendRequestStatus.ACCEPTED)
+                .or(() -> friendRequestRepository.findBySenderAndReceiverAndStatus(currentMember, someone, FriendRequestStatus.ACCEPTED))
+                .isPresent();
+    }
+
 }
