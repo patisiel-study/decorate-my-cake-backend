@@ -10,8 +10,9 @@ import org.springframework.data.domain.Page;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class messageDto {
+public class CandleResponseDto {
     private String message;
     private Page<CandleListDto> candleList;
+    private long totalCandles;
 
 }
