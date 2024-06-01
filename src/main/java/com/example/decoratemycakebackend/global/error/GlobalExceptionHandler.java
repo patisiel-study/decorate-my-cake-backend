@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.naming.AuthenticationException;
+import java.util.Objects;
+
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -75,9 +77,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         log.error("handleHttpMessageNotReadableException: {}", e.getMessage());
+
+        // 상세 원인 메시지 가져오기
+        String errorDetailMessage = Objects.nonNull(e.getCause()) ? e.getCause().getMessage() : "잘못된 요청 본문입니다.";
+
         return ResponseEntity
                 .status(ErrorCode.INVALID_REQUEST_BODY.getStatus())
-                .body(new ErrorResponse(ErrorCode.INVALID_REQUEST_BODY));
+                .body(new ErrorResponse(ErrorCode.INVALID_REQUEST_BODY, errorDetailMessage));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
