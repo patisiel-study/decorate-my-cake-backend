@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class JwtTokenProvider {
+
     private final Key key;
     private final long accessTokenValidityInMilliseconds = 60 * 60 * 1000L; // 1시간
     private final long refreshTokenValidityInMilliseconds = 14 * 24 * 60 * 60 * 1000L; // 2주
@@ -52,28 +53,14 @@ public class JwtTokenProvider {
 
         // Access Token 생성
         Date accessTokenExpireIn = new Date(now + accessTokenValidityInMilliseconds);
-        String accessToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim("auth", authorities)
-                .setExpiration(accessTokenExpireIn)
-                .signWith(key)
-                .compact();
+        String accessToken = buildToken(authentication.getName(), authorities, accessTokenExpireIn);
 
         // Refresh Token 생성
-        String refreshToken = Jwts.builder()
-                .setSubject(authentication.getName())
-                .setExpiration(new Date(now + refreshTokenValidityInMilliseconds))
-                .signWith(key)
-                .compact();
+        Date refreshTokenExpireIn = new Date(now + refreshTokenValidityInMilliseconds);
+        String refreshToken = buildToken(authentication.getName(), null, refreshTokenExpireIn);
 
         // Refresh Token을 Redis에 저장
-        try {
-            // Refresh Token을 Redis에 저장
-            redisTemplate.opsForValue().set(authentication.getName(), refreshToken, refreshTokenValidityInMilliseconds, TimeUnit.MILLISECONDS);
-        } catch (Exception e) {
-            log.error("Redis에 대한 RefreshToken 저장 시도 실패", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
-        }
+        storeRefreshToken(authentication.getName(), refreshToken);
 
         return JwtToken.builder()
                 .grantType("Bearer")
@@ -84,21 +71,17 @@ public class JwtTokenProvider {
 
     // Jwt 토큰을 복호화하여 토큰에 들어있는 정보를 꺼냄
     public Authentication getAuthentication(String accessToken) {
-        // Jwt 토큰 복호화
         Claims claims = parseClaims(accessToken);
 
         if (claims.get("auth") == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new CustomException(ErrorCode.UNAUTHORIZED_TOKEN);
         }
 
-        // claims에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("auth").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
-        // UserDetails 객체를 만들어서 Authentication return
-        // UserDetails는 interface이고, User는 그것을 구현한 class
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
@@ -111,70 +94,78 @@ public class JwtTokenProvider {
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token);
-
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            throw e;
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty", e);
+        } catch (JwtException e) {
+            log.info("Invalid JWT Token: {}", e.getMessage());
         }
         return false;
     }
 
+    // AccessToken 갱신
     public JwtToken refreshAccessToken(String refreshToken) {
-        // 요청받은 Refresh Token의 유효성 검사
         if (!validateToken(refreshToken)) {
-            throw new RuntimeException("Invalid Refresh Token");
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        // Refresh Token에서 사용자 정보 추출
         Claims claims = parseClaims(refreshToken);
         String username = claims.getSubject();
 
-        if (username == null || username.isEmpty()) {
-            throw new RuntimeException("Invalid Refresh Token: Missing user information");
-        }
+        validateRefreshToken(refreshToken, username);
 
-        // Redis에 저장된 Refresh Token 가져오기
-        String savedRefreshToken = (String)redisTemplate.opsForValue().get(username);
-
-        if (savedRefreshToken == null) {
-            throw new RuntimeException("Refresh Token not found in Redis");
-        }
-
-        // 요청받은 Refresh Token과 Redis에 저장된 Refresh Token 비교
-        if (!refreshToken.equals(savedRefreshToken)) {
-            throw new RuntimeException("Refresh Token is not matched from redis");
-        }
-
-        // Refresh Token의 만료 시간 확인
-        Date expiration = claims.getExpiration();
-        if (expiration != null && expiration.before(new Date())) {
-            // Refresh Token이 만료된 경우 Redis에서 해당 토큰 삭제. 사용자는 새로 로그인 해야함.
-            redisTemplate.delete(username);
-            throw new RuntimeException("Refresh Token has expired");
-        }
-
-        // 새로운 Access Token 생성
+        String authorities = getUserAuthorities(username);
         long now = (new Date()).getTime();
         Date accessTokenExpireIn = new Date(now + accessTokenValidityInMilliseconds);
-        String newAccessToken = Jwts.builder()
-                .setSubject(username)
-                .claim("auth", getUserAuthorities(username))
-                .setExpiration(accessTokenExpireIn)
-                .signWith(key)
-                .compact();
+        String newAccessToken = buildToken(username, authorities, accessTokenExpireIn);
 
         return JwtToken.builder()
                 .grantType("Bearer")
                 .accessToken(newAccessToken)
-                .refreshToken(savedRefreshToken)
+                .refreshToken(refreshToken)
                 .build();
+    }
+
+    private void validateRefreshToken(String refreshToken, String username) {
+        if (username == null || username.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String savedRefreshToken = (String) redisTemplate.opsForValue().get(username);
+
+        if (savedRefreshToken == null) {
+            throw new CustomException(ErrorCode.NOT_FOUND_REFRESH_TOKEN);
+        }
+
+        if (!refreshToken.equals(savedRefreshToken)) {
+            throw new CustomException(ErrorCode.NOT_MATCHED_REFRESH_TOKEN);
+        }
+
+        Claims claims = parseClaims(refreshToken);
+        if (claims.getExpiration().before(new Date())) {
+            redisTemplate.delete(username);
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        }
+    }
+
+    private String buildToken(String subject, String authorities, Date expiration) {
+        JwtBuilder builder = Jwts.builder()
+                .setSubject(subject)
+                .setExpiration(expiration)
+                .signWith(key);
+
+        if (authorities != null) {
+            builder.claim("auth", authorities);
+        }
+
+        return builder.compact();
+    }
+
+    private void storeRefreshToken(String username, String refreshToken) {
+        try {
+            redisTemplate.opsForValue().set(username, refreshToken, refreshTokenValidityInMilliseconds, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("Failed to store Refresh Token in Redis", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
 
     private String getUserAuthorities(String username) {
@@ -184,12 +175,12 @@ public class JwtTokenProvider {
                 .collect(Collectors.joining(","));
     }
 
-    private Claims parseClaims(String accessToken) {
+    private Claims parseClaims(String token) {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
-                    .parseClaimsJws(accessToken)
+                    .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();

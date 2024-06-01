@@ -44,6 +44,13 @@ public enum ErrorCode {
     CAKE_ONLY_FRIENDS(HttpStatus.NOT_FOUND, "친구인사람만 볼 수 있습니다."),
     CAKE_ONLY_ME(HttpStatus.NOT_FOUND, "케이크 주인만 볼 수 있습니다"),
     ALREADY_CREATED_CAKE(HttpStatus.OK, "이미 해당 년도의 케이크가 존재합니다."),
+
+    UNAUTHORIZED_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 유효하지 않습니다."),
+    NOT_FOUND_REFRESH_TOKEN(HttpStatus.NOT_FOUND, "리프레시 토큰을 찾지 못했습니다."),
+    NOT_MATCHED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "DB의 리프레시 토큰값과 일치하지 않습니다."),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
+
     FRIEND_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "친구 요청을 찾을 수 없습니다.");
 
 
