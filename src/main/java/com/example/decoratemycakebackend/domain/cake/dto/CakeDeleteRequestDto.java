@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CakeDeleteRequestDto {
     private String email;
-    private int cakecreatedYear;
-    //private LocalDate createdAt;
+    private Integer cakeCreatedYear;
 }

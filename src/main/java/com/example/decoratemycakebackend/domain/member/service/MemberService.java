@@ -38,8 +38,8 @@ public class MemberService {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(username, password);
 
-    // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member에 대한 검증 진행
-    // authenticate 메서드가 실행될 때 CustomUserDetailsService에서 만든 loadUserByUsername 메서드 실행
+        // 2. 실제 검증. authenticate() 메서드를 통해 요청된 Member에 대한 검증 진행
+        // authenticate 메서드가 실행될 때 CustomUserDetailsService에서 만든 loadUserByUsername 메서드 실행
 
         try {
             Authentication authentication = authenticationManagerBuilder
@@ -66,5 +66,9 @@ public class MemberService {
 
         Member savedMember = memberRepository.save(memberMapper.toMember(signUpDto, encodedPassword, roles));
         return memberMapper.toMemberDto(savedMember);
+    }
+
+    public void logout(String email) {
+        jwtTokenProvider.deleteRefreshToken(email);
     }
 }

@@ -9,6 +9,6 @@ import lombok.*;
 @Builder
 public class CandleGetRequestDto {
     private String email;
-    private int cakeCreatedYear;
+    private Integer cakeCreatedYear;
 
 }

@@ -21,15 +21,14 @@ public class Candle extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "candle_id", nullable = false)
     private Long candleId;
-    private String CandleName; // 캔들과 캔들 이미지 이름 동일함.
-    private String CandleContent; // 캔들 메시지의 내용
-    private String CandleTitle; // 캔들 메시지의 제목
+    private String candleName; // 캔들과 캔들 이미지 이름 동일함.
+    private String writerEmail; // 캔들 작성자의 이메일
+    private String candleContent; // 캔들 메시지의 내용
+    private String candleTitle; // 캔들 메시지의 제목
     private boolean isPrivate; // 비밀글이면 true, 공개글이면 false
     private String writer; // 기본적으로 작성자의 닉네임, 프론트 측에서 변경 가능함.
     @CreatedDate
     private LocalDateTime candleCreatedAt;
-    private long totalCandleCount;
-    private String message;
 
     public boolean isPrivate() {
         return isPrivate;

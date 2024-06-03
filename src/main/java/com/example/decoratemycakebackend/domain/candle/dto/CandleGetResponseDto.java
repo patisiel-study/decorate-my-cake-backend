@@ -20,6 +20,6 @@ public class CandleGetResponseDto {
     private String message;
     private String writer;
     private boolean isPrivate;
-    private int totalCandleCount;
+    private Integer totalCandleCount;
 
 }

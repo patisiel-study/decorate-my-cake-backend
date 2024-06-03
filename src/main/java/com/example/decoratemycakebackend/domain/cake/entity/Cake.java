@@ -23,7 +23,7 @@ public class Cake extends BaseEntity {
     //private String nickname;
     //private String cakeName;
     //private LocalDate createdAt;
-    private int createdYear;
+    private Integer createdYear;
     private String email;
     private String cakeName;
 
@@ -55,6 +55,14 @@ public class Cake extends BaseEntity {
 
     public int getCakeCreatedYear() {
         return getCreatedAt().getYear();
+    }
+
+    public void updatePermissions(CandleCreatePermission candleCreatePermission,
+                                  CandleViewPermission candleViewPermission,
+                                  CandleCountPermission candleCountPermission) {
+        this.candleCreatePermission = candleCreatePermission;
+        this.candleViewPermission = candleViewPermission;
+        this.candleCountPermission = candleCountPermission;
     }
 
 }
