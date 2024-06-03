@@ -17,8 +17,8 @@ public class CakeViewResponseDto {
     private String nickname;
     private String cakeName;
     private String birthday;
-    private int candleCount;
-    private int cakeCreatedYear;
+    private Integer candleCount;
+    private Integer cakeCreatedYear;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;
     private CandleCountPermission candleCountPermission;
