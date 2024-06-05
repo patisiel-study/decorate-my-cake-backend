@@ -19,17 +19,19 @@ public class CakeViewResponseDto {
     private String birthday;
     private Integer candleCount;
     private Integer cakeCreatedYear;
+    private Integer dDay;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;
     private CandleCountPermission candleCountPermission;
 
-    public static CakeViewResponseDto toDto(Cake cake, Member member, String message) {
+    public static CakeViewResponseDto toDto(Cake cake, Member member, String message, Integer dDay) {
 
         return CakeViewResponseDto.builder()
                 .message(message)
                 .nickname(member.getNickname())
                 .cakeName(cake.getCakeName())
                 .birthday(member.getBirthday().toString())
+                .dDay(dDay)
                 .candleCount(cake.getCandles().size())
                 .cakeCreatedYear(cake.getCreatedYear())
                 .candleCreatePermission(cake.getCandleCreatePermission())
@@ -38,7 +40,7 @@ public class CakeViewResponseDto {
                 .build();
     }
 
-    public static CakeViewResponseDto toDtoForFriend(Cake cake, Member member, String message) {
+    public static CakeViewResponseDto toDtoForFriend(Cake cake, Member member, String message, Integer dDay) {
         int candleCount = cake.getCandleCountPermission() == CandleCountPermission.ANYONE ? cake.getCandles().size() : -1;
 
         return CakeViewResponseDto.builder()
@@ -46,6 +48,7 @@ public class CakeViewResponseDto {
                 .nickname(member.getNickname())
                 .cakeName(cake.getCakeName())
                 .birthday(member.getBirthday().toString())
+                .dDay(dDay)
                 .candleCount(candleCount)
                 .cakeCreatedYear(cake.getCreatedYear())
                 .candleCreatePermission(cake.getCandleCreatePermission())

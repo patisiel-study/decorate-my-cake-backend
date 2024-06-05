@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import static com.example.decoratemycakebackend.global.util.BirthdayUtil.getNextBirthday;
 
@@ -37,29 +38,41 @@ public class FriendCakeService {
         Cake someoneCake = getCake(someoneEmail, LocalDateTime.now().getYear());
 
         // 타인의 나이 계산
-        int age = getSomeoneAge(someone);
-        return getCakeAndCandleData(currentMember, someone, someoneCake, age);
+        int age = calculateAge(someone.getBirthday(), LocalDate.now());
+        // 타인의 d-day 계산
+        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), someone.getBirthday());
+        return getCakeData(currentMember, someone, someoneCake, age, daysUntilBirthday);
+    }
+
+    private Integer calculateDaysUntilBirthday(LocalDate today, LocalDate birthday) {
+        LocalDate nextBirthday = getNextBirthday(today, birthday);
+        return (int) ChronoUnit.DAYS.between(today, nextBirthday);
+    }
+
+    private int calculateAge(LocalDate birthday, LocalDate today) {
+        LocalDate nextBirthday = getNextBirthday(today, birthday);
+        return nextBirthday.getYear() - birthday.getYear();
     }
 
     /** 친구의 케이크 열람시에는 생일로부터의 기간에 따라 다른 정보를 표시하는게 아니라,
      단순히 친구가 설정한 케이크 설정에 따라 데이터 조회 범위가 달라진다.
      **/
-    private int getSomeoneAge(Member someone) {
-
-        LocalDate friendBirthday = someone.getBirthday();
-        LocalDate today = LocalDate.now();
-        LocalDate nextBirthday = getNextBirthday(today, friendBirthday);
-
-        return nextBirthday.getYear() - friendBirthday.getYear();
-
-    }
+//    private int getSomeoneAge(Member someone) {
+//
+//        LocalDate friendBirthday = someone.getBirthday();
+//        LocalDate today = LocalDate.now();
+//        LocalDate nextBirthday = getNextBirthday(today, friendBirthday);
+//
+//        return nextBirthday.getYear() - friendBirthday.getYear();
+//
+//    }
 
     private Cake getCake(String email, int cakeCreatedYear) {
         return cakeRepository.findByEmailAndCreatedYear(email, cakeCreatedYear)
                 .orElse(null);
     }
 
-    private CakeViewResponseDto getCakeAndCandleData(Member currentMember, Member someone, Cake someoneCake, int age) {
+    private CakeViewResponseDto getCakeData(Member currentMember, Member someone, Cake someoneCake, int age, Integer daysUntilBirthday) {
         // 케이크가 없는 경우
         if (someoneCake == null) {
             return cakeViewResponseDtoWithMessage(someone, "친구가 아직 케이크를 만들지 않았습니다!");
@@ -67,11 +80,11 @@ public class FriendCakeService {
 
         switch (someoneCake.getCandleViewPermission()) {
             case ANYONE:
-                return getCakeAndCandlesForSomeone(someoneCake, someone, age);
+                return getCakeForSomeone(someoneCake, someone, age, daysUntilBirthday);
             case ONLY_FRIENDS:
                 // 친구관계 확인
                 if (friendRequestService.isFriend(currentMember, someone)) {
-                    return getCakeAndCandlesForSomeone(someoneCake, someone, age);
+                    return getCakeForSomeone(someoneCake, someone, age, daysUntilBirthday);
                 } else {
                     throw new CustomException(ErrorCode.NOT_FRIEND);
                 }
@@ -82,12 +95,12 @@ public class FriendCakeService {
         }
     }
 
-    private CakeViewResponseDto getCakeAndCandlesForSomeone(Cake someoneCake, Member someone, int age) {
+    private CakeViewResponseDto getCakeForSomeone(Cake someoneCake, Member someone, int age, Integer daysUntilBirthday) {
 //        List<CandleListDto> candleList = someoneCake.getCandles().stream()
 //                .map(CandleListDto::from)
 //                .collect(Collectors.toList());
 
-        return CakeViewResponseDto.toDtoForFriend(someoneCake, someone, getBirthdayMessage(someone, age));
+        return CakeViewResponseDto.toDtoForFriend(someoneCake, someone, getBirthdayMessage(someone, age), daysUntilBirthday);
     }
 
     private CakeViewResponseDto cakeViewResponseDtoWithMessage(Member someone, String message) {

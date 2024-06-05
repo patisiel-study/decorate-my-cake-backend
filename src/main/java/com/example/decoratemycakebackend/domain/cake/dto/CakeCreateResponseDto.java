@@ -13,6 +13,7 @@ public class CakeCreateResponseDto {
     private String nickname;
     private String cakeName;
     private String birthday;
+    private Integer dDay;
     private Integer cakeCreatedYear;
     private CandleCreatePermission candleCreatePermission;
     private CandleViewPermission candleViewPermission;
