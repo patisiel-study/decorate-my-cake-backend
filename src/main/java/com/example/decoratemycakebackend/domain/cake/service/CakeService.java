@@ -35,7 +35,7 @@ public class CakeService {
         List<Cake> cakes = cakeRepository.findAllByMemberEmail(email);
 
         return cakes.stream()
-                .map(cake -> CakeViewResponseDto.toDto(cake, member, null))
+                .map(cake -> CakeViewResponseDto.toDto(cake, member, null, null))
                 .collect(Collectors.toList());
     }
 
@@ -90,10 +90,7 @@ public class CakeService {
                 });
 
         // 생일까지 남은기간 계산
-        LocalDate today = LocalDate.now();
-        LocalDate birthday = member.getBirthday();
-        LocalDate nextBirthday = getNextBirthday(today, birthday);
-        long daysUntilBirthday = ChronoUnit.DAYS.between(today, nextBirthday);
+        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
 
         // D-30보다 많이 남은 경우, 케이크 생성 불가 안내
         if (daysUntilBirthday > 30) {
@@ -101,6 +98,7 @@ public class CakeService {
             //throw new CustomException(ErrorCode.FORBIDDEN_CREATE_CAKE);
             return CakeCreateResponseDto.builder()
                     .birthday(member.getBirthday().toString())
+                    .dDay(daysUntilBirthday)
                     .message("생일로부터 D-" + daysUntilBirthday + "일 남았습니다. 케이크 생성은 D-30일부터 가능합니다.")
                     .build();
         }
@@ -110,7 +108,7 @@ public class CakeService {
         // DB에 정보 저장후 멤버 정보 업데이트
         saveCakeAndUpdateMember(cake, member);
         // 케이크 설정 정보 생성
-        return createCakeCreateResponseDto(cake);
+        return createCakeCreateResponseDto(cake, daysUntilBirthday);
     }
 
     public CakeViewResponseDto getCakeData(CakeViewRequestDto request) {
@@ -121,17 +119,25 @@ public class CakeService {
         Optional<Cake> cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear());
 
         // 생일까지 남은기간 계산
-        LocalDate today = LocalDate.now();
         LocalDate birthday = member.getBirthday();
-        LocalDate nextBirthday = getNextBirthday(today, birthday);
-        long daysUntilBirthday = ChronoUnit.DAYS.between(today, nextBirthday);
-        int age = nextBirthday.getYear() - birthday.getYear();
+        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
+        int age = calculateAge(birthday, LocalDate.now());
 
         if (isBirthdayToday(daysUntilBirthday)) {
-            return buildBirthdayCakeViewResponseDto(member, age, cake);
+            return buildBirthdayCakeViewResponseDto(member, age, cake, daysUntilBirthday);
         } else {
             return buildBeforeBirthdayCakeViewResponseDto(member, birthday, age, daysUntilBirthday, cake);
         }
+    }
+
+    private Integer calculateDaysUntilBirthday(LocalDate today, LocalDate birthday) {
+        LocalDate nextBirthday = getNextBirthday(today, birthday);
+        return (int)ChronoUnit.DAYS.between(today, nextBirthday);
+    }
+
+    private int calculateAge(LocalDate birthday, LocalDate today) {
+        LocalDate nextBirthday = getNextBirthday(today, birthday);
+        return nextBirthday.getYear() - birthday.getYear();
     }
 
     private Member getMember(String email) {
@@ -158,12 +164,13 @@ public class CakeService {
         memberRepository.save(member);
     }
 
-    private CakeCreateResponseDto createCakeCreateResponseDto(Cake cake) {
+    private CakeCreateResponseDto createCakeCreateResponseDto(Cake cake, Integer daysUntilBirthday) {
         return CakeCreateResponseDto.builder()
                 .candleCreatePermission(cake.getCandleCreatePermission())
                 .candleViewPermission(cake.getCandleViewPermission())
                 .candleCountPermission(cake.getCandleCountPermission())
                 .cakeName(cake.getCakeName())
+                .dDay(daysUntilBirthday)
                 .cakeCreatedYear(cake.getCreatedYear())
                 .nickname(cake.getMember().getNickname())
                 .build();
@@ -175,22 +182,23 @@ public class CakeService {
     }
 
 
-    private CakeViewResponseDto buildBirthdayCakeViewResponseDto(Member member, int age, Optional<Cake> cakeOptional) {
+    private CakeViewResponseDto buildBirthdayCakeViewResponseDto(Member member, int age, Optional<Cake> cakeOptional, Integer daysUntilBirthday) {
         return cakeOptional.map(cake -> {
-            return CakeViewResponseDto.toDto(cake, member, getBirthdayMessage(member, age));
+            return CakeViewResponseDto.toDto(cake, member, getBirthdayMessage(member, age), daysUntilBirthday);
             //    케이크 없으면 만들도록 유도
-        }).orElse(buildRecommendToCreateCakeDto(member, age));
+        }).orElse(buildRecommendToCreateCakeDto(member, age, daysUntilBirthday));
     }
 
-    private CakeViewResponseDto buildRecommendToCreateCakeDto(Member member, int age) {
+    private CakeViewResponseDto buildRecommendToCreateCakeDto(Member member, int age, Integer daysUntilBirthday) {
         return CakeViewResponseDto.builder()
                 .nickname(member.getNickname())
                 .birthday(member.getBirthday().toString())
+                .dDay(daysUntilBirthday)
                 .message(member.getNickname() + "님의 " + age + "살 생일 케이크를 만들어 보세요!")
                 .build();
     }
 
-    private CakeViewResponseDto buildBeforeBirthdayCakeViewResponseDto(Member member, LocalDate birthday, int age, long daysUntilBirthday, Optional<Cake> cakeOptional) {
+    private CakeViewResponseDto buildBeforeBirthdayCakeViewResponseDto(Member member, LocalDate birthday, int age, Integer daysUntilBirthday, Optional<Cake> cakeOptional) {
 
         // D-Day가 30일보다 많이 남은경우, D-day 남은 날짜 반환
         if (daysUntilBirthday > 30) {
@@ -199,21 +207,22 @@ public class CakeService {
         // TODO: 캔들 열람 기능은 candle 부분으로 이동되어야 함.
         // D-Day가 30일 이하로 남은 경우
         // 케이크 만든게 있다면 케이크의 일부 데이터만 반환
-        return cakeOptional.map(cake -> buildCakeWithPartialCandleInfoDto(member, cake))
+        return cakeOptional.map(cake -> buildCakeWithPartialCandleInfoDto(member, cake, daysUntilBirthday))
                 // 케이크 안 만들었다면 케이크 만들도록 유도
-                .orElse(buildRecommendToCreateCakeDto(member, age));
+                .orElse(buildRecommendToCreateCakeDto(member, age, daysUntilBirthday));
     }
 
-    private CakeViewResponseDto buildDDayMessageDto(Member member, LocalDate birthday, long daysUntilBirthday) {
+    private CakeViewResponseDto buildDDayMessageDto(Member member, LocalDate birthday, Integer daysUntilBirthday) {
         // D-30보다 많이 남은 경우, 케이크 생성이 안되는 것이 정상임.
         return CakeViewResponseDto.builder()
                 .nickname(member.getNickname())
+                .dDay(daysUntilBirthday)
                 .birthday(birthday.toString())
                 .message("생일까지 D-" + daysUntilBirthday + " 남았습니다. 케이크 생성은 생일 D-30일부터 가능합니다.")
                 .build();
     }
 
-    private CakeViewResponseDto buildCakeWithPartialCandleInfoDto(Member member, Cake cake) {
+    private CakeViewResponseDto buildCakeWithPartialCandleInfoDto(Member member, Cake cake, Integer daysUntilBirthday) {
         // from을 쓰지 않고 일부 데이터만 꺼내오기
 //        List<CandleListDto> candleListDto = cake.getCandles().stream()
 //                .map(candle -> CandleListDto.builder()
@@ -222,7 +231,7 @@ public class CakeService {
 //                        .build())
 //                .collect(Collectors.toList());
 
-        return CakeViewResponseDto.toDto(cake, member, null);
+        return CakeViewResponseDto.toDto(cake, member, null, daysUntilBirthday);
     }
 
     private String getBirthdayMessage(Member member, int age) {
