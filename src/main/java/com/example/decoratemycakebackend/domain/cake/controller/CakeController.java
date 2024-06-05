@@ -56,7 +56,7 @@ public class CakeController {
         return ResponseEntity.ok(new ResponseDto<>("케이크 생성이 완료되었습니다.", cakeService.createCake(request)));
     }
 
-    @Operation(summary = "단일 케이크와 하위 캔들 정보 열람", description = "특정 연도 케이크에 대한 정보, 설정, 캔들에 대한 정보 열람 가능<br>"+
+    @Operation(summary = "나의 케이크 정보 열람", description = "특정 연도 케이크에 대한 정보, 설정에 대한 정보 열람 가능<br>"+
             "케이크가 없는 경우 메시지 출력 예시1: (D-30 초과) 생일까지 D-313 남았습니다. 케이크 생성은 생일 D-30일부터 가능합니다.<br>" +
             "케이크가 없는 경우 메시지 출력 예시2: (D-30 이하) 민교수님의 28살 생일 케이크를 만들어 보세요!")
     @GetMapping("/view")
@@ -64,8 +64,8 @@ public class CakeController {
         return ResponseEntity.ok(new ResponseDto<>("케이크 및 캔들 열람이 완료되었습니다.", cakeService.getCakeData(request)));
     }
 
-    @Operation(summary = "친구의 당해 케이크와 하위 캔들 정보 열람", description = "친구의 당해 년도 케이크에 대한 정보, 설정, 캔들에 대한 정보 열람 가능<br>" +
-            "친구가 케이크 캔들 열람을 비공개했을시(ONLY_ME), candleCount가 -1로 표시됨")
+    @Operation(summary = "타인(친구)의 당해 케이크 정보 열람", description = "타인(친구)의 당해 년도 케이크에 대한 정보, 설정에 대한 정보 열람 가능<br>" +
+            "타인이 케이크 캔들 열람을 비공개했을시(ONLY_ME), candleCount는 -1로 표시됨")
     @GetMapping("/friends/view/{friendEmail}")
     public ResponseEntity<ResponseDto<?>> getCakeForFriend(@PathVariable String friendEmail) {
         return ResponseEntity.ok(new ResponseDto<>("친구의 케이크 및 캔들 열람이 완료되었습니다.", friendCakeService.getCakeFromSomeone(friendEmail)));
