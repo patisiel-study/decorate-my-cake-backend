@@ -4,6 +4,7 @@ import com.example.decoratemycakebackend.domain.candle.dto.*;
 import com.example.decoratemycakebackend.domain.candle.service.CandleService;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "캔들 관리 API", description = "캔들 관리 API endpoints")
 @RestController
 @RequestMapping("/candle")
 public class CandleController {
