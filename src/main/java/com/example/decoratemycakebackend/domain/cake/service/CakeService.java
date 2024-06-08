@@ -23,13 +23,13 @@ import static com.example.decoratemycakebackend.global.util.BirthdayUtil.getNext
 @Service
 @RequiredArgsConstructor
 public class CakeService {
-    private static final int PAGE_SIZE = 10;
     private final CakeRepository cakeRepository;
     private final MemberRepository memberRepository;
 
     //전체 케이크 email로 가져오는거 creatat 필요없음
     // stream과 정적 팩토리 메서드의 사용으로 코드 개선함
-    public List<CakeViewResponseDto> getAllCakesByEmail(String email) {
+    public List<CakeViewResponseDto> getAllCakesByEmail() {
+        String email = SecurityUtil.getCurrentUserEmail();
         Member member = getMember(email);
 
         List<Cake> cakes = cakeRepository.findAllByMemberEmail(email);
@@ -69,7 +69,6 @@ public class CakeService {
 
         cakeRepository.delete(cake);
 
-        // TODO: 해당 케이크에 있는 모든 캔들 정보도 삭제해야함.
     }
 
     public CakeCreateResponseDto createCake(CakeCreateRequestDto request) {

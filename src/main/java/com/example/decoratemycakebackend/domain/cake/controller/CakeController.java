@@ -25,8 +25,8 @@ public class CakeController {
 
     @Operation(summary = "나의 역대 케이크 전체 조회", description = "각 연도별 케이크 목록 조회")
     @GetMapping("/list")
-    public ResponseEntity<ResponseDto<?>> getAllCakes(@RequestParam String email) {
-        return ResponseEntity.ok(new ResponseDto<>("나의 역대 케이크 조회가 완료되었습니다.", cakeService.getAllCakesByEmail(email)));
+    public ResponseEntity<ResponseDto<?>> getAllCakes() {
+        return ResponseEntity.ok(new ResponseDto<>("나의 역대 케이크 조회가 완료되었습니다.", cakeService.getAllCakesByEmail()));
     }
 
     @Operation(summary = "케이크 수정", description = "케이크 수정<br>" +
