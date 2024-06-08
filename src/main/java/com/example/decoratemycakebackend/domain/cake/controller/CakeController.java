@@ -3,7 +3,6 @@ package com.example.decoratemycakebackend.domain.cake.controller;
 import com.example.decoratemycakebackend.domain.cake.dto.CakeCreateRequestDto;
 import com.example.decoratemycakebackend.domain.cake.dto.CakeDeleteRequestDto;
 import com.example.decoratemycakebackend.domain.cake.dto.CakePutRequestDto;
-import com.example.decoratemycakebackend.domain.cake.dto.CakeViewRequestDto;
 import com.example.decoratemycakebackend.domain.cake.service.CakeService;
 import com.example.decoratemycakebackend.domain.cake.service.FriendCakeService;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
@@ -60,8 +59,8 @@ public class CakeController {
             "케이크가 없는 경우 메시지 출력 예시1: (D-30 초과) 생일까지 D-313 남았습니다. 케이크 생성은 생일 D-30일부터 가능합니다.<br>" +
             "케이크가 없는 경우 메시지 출력 예시2: (D-30 이하) 민교수님의 28살 생일 케이크를 만들어 보세요!")
     @GetMapping("/view")
-    public ResponseEntity<ResponseDto<?>> getCakeData(@Valid @ModelAttribute CakeViewRequestDto request) {
-        return ResponseEntity.ok(new ResponseDto<>("케이크 및 캔들 열람이 완료되었습니다.", cakeService.getCakeData(request)));
+    public ResponseEntity<ResponseDto<?>> getCakeData() {
+        return ResponseEntity.ok(new ResponseDto<>("케이크 및 캔들 열람이 완료되었습니다.", cakeService.getCakeData()));
     }
 
     @Operation(summary = "타인(친구)의 당해 케이크 정보 열람", description = "타인(친구)의 당해 년도 케이크에 대한 정보, 설정에 대한 정보 열람 가능<br>" +

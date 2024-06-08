@@ -61,7 +61,7 @@ public class CakeService {
     }
 
     public void deleteCake(CakeDeleteRequestDto request) {
-        String email = request.getEmail();
+        String email = SecurityUtil.getCurrentUserEmail();
         Member member = getMember(email);
 
         Cake cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCakeCreatedYear())
@@ -106,12 +106,13 @@ public class CakeService {
         return createCakeCreateResponseDto(cake, daysUntilBirthday);
     }
 
-    public CakeViewResponseDto getCakeData(CakeViewRequestDto request) {
-        // 친구의 케이크를 조회할 수도 있으므로 로그인 한 유저의 이메일과 일치 여부 확인하지 않음
-        String email = request.getEmail();
+    public CakeViewResponseDto getCakeData() {
+        // 로그인 한 유저의 케이크 정보를 가져오는 기능임.
+        String email = SecurityUtil.getCurrentUserEmail();
 
         Member member = getMember(email);
-        Optional<Cake> cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear());
+        // 가장 최신 연도의 케이크 정보 가져오기
+        Optional<Cake> cake = cakeRepository.findLatestCakeByEmail(email);
 
         // 생일까지 남은기간 계산
         LocalDate birthday = member.getBirthday();

@@ -21,22 +21,9 @@ public class Cake extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "cake_id", nullable = false)
     private Long id;
-    //private String nickname;
-    //private String cakeName;
-    //private LocalDate createdAt;
     private Integer createdYear;
     private String email;
     private String cakeName;
-
-    //@ManyToOne
-    //@JoinColumn(name = "member_id")
-    //private Member member;
-
-    //@OneToOne(mappedBy = "cake", cascade = CascadeType.ALL)
-    //private Setting setting = new Setting();
-
-    //@OneToMany(mappedBy = "cake", cascade = CascadeType.ALL)
-    //private List<Candle> candles = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private CandleCreatePermission candleCreatePermission;
