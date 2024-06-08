@@ -10,6 +10,5 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CakeDeleteRequestDto {
-    private String email;
     private Integer cakeCreatedYear;
 }

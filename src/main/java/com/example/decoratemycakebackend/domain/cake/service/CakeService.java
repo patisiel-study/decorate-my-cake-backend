@@ -7,6 +7,7 @@ import com.example.decoratemycakebackend.domain.member.entity.Member;
 import com.example.decoratemycakebackend.domain.member.repository.MemberRepository;
 import com.example.decoratemycakebackend.global.error.CustomException;
 import com.example.decoratemycakebackend.global.error.ErrorCode;
+import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +19,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.decoratemycakebackend.global.util.BirthdayUtil.getNextBirthday;
-import static com.example.decoratemycakebackend.global.util.ValidationUtil.validateCurrentEmail;
 
 @Service
 @RequiredArgsConstructor
 public class CakeService {
-    private static final int PAGE_SIZE = 10;
     private final CakeRepository cakeRepository;
     private final MemberRepository memberRepository;
 
     //전체 케이크 email로 가져오는거 creatat 필요없음
     // stream과 정적 팩토리 메서드의 사용으로 코드 개선함
-    public List<CakeViewResponseDto> getAllCakesByEmail(String email) {
+    public List<CakeViewResponseDto> getAllCakesByEmail() {
+        String email = SecurityUtil.getCurrentUserEmail();
         Member member = getMember(email);
 
         List<Cake> cakes = cakeRepository.findAllByMemberEmail(email);
@@ -40,8 +40,7 @@ public class CakeService {
     }
 
     public CakePutResponseDto updateCake(CakePutRequestDto request) {
-        String email = request.getEmail();
-        validateCurrentEmail(email);
+        String email = SecurityUtil.getCurrentUserEmail();
 
         Member member = getMember(email);
 
@@ -49,9 +48,7 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
         // 권한 필드 업데이트
-        cake.updatePermissions(request.getCandleCreatePermission(),
-                request.getCandleViewPermission(),
-                request.getCandleCountPermission());
+        cake.updatePermissions(request);
 
         Cake updatedCake = cakeRepository.save(cake);
 
@@ -64,7 +61,7 @@ public class CakeService {
     }
 
     public void deleteCake(CakeDeleteRequestDto request) {
-        String email = request.getEmail();
+        String email = SecurityUtil.getCurrentUserEmail();
         Member member = getMember(email);
 
         Cake cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCakeCreatedYear())
@@ -72,30 +69,27 @@ public class CakeService {
 
         cakeRepository.delete(cake);
 
-        // TODO: 해당 케이크에 있는 모든 캔들 정보도 삭제해야함.
     }
 
     public CakeCreateResponseDto createCake(CakeCreateRequestDto request) {
 
-        // 프론트에서 보낸 email과 로그인 된 유저의 email 일치 여부 확인
-        String email = request.getEmail();
-        validateCurrentEmail(email);
+        String email = SecurityUtil.getCurrentUserEmail();
         // 멤버 정보 DB에서 조회
         Member member = getMember(email);
 
+        // 생일까지 남은기간 계산
+        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
+        // 다음 생일의 연도 계산
+        int nextBirthdayYear = LocalDate.now().plusDays(daysUntilBirthday).getYear();
+
         // 이미 해당 년도에 생성한 케이크가 있는지 확인
-        cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear())
+        cakeRepository.findByEmailAndCreatedYear(email, nextBirthdayYear)
                 .ifPresent(cake -> {
                     throw new CustomException(ErrorCode.ALREADY_CREATED_CAKE);
                 });
 
-        // 생일까지 남은기간 계산
-        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
-
         // D-30보다 많이 남은 경우, 케이크 생성 불가 안내
         if (daysUntilBirthday > 30) {
-            // 에러를 띄우면 아래와 같은 동적 메시지를 반환할 수 없으므로 폐기했음.
-            //throw new CustomException(ErrorCode.FORBIDDEN_CREATE_CAKE);
             return CakeCreateResponseDto.builder()
                     .birthday(member.getBirthday().toString())
                     .dDay(daysUntilBirthday)
@@ -104,19 +98,20 @@ public class CakeService {
         }
 
         // 케이크 정보 생성
-        Cake cake = createCake(request, member, email);
+        Cake cake = createCake(request, member, email, nextBirthdayYear);
         // DB에 정보 저장후 멤버 정보 업데이트
         saveCakeAndUpdateMember(cake, member);
         // 케이크 설정 정보 생성
         return createCakeCreateResponseDto(cake, daysUntilBirthday);
     }
 
-    public CakeViewResponseDto getCakeData(CakeViewRequestDto request) {
-        // 친구의 케이크를 조회할 수도 있으므로 로그인 한 유저의 이메일과 일치 여부 확인하지 않음
-        String email = request.getEmail();
+    public CakeViewResponseDto getCakeData() {
+        // 로그인 한 유저의 케이크 정보를 가져오는 기능임.
+        String email = SecurityUtil.getCurrentUserEmail();
 
         Member member = getMember(email);
-        Optional<Cake> cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear());
+        // 가장 최신 연도의 케이크 정보 가져오기
+        Optional<Cake> cake = cakeRepository.findLatestCakeByEmail(email);
 
         // 생일까지 남은기간 계산
         LocalDate birthday = member.getBirthday();
@@ -145,12 +140,12 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private Cake createCake(CakeCreateRequestDto request, Member member, String email) {
+    private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear) {
         return Cake.builder()
                 .cakeName(request.getCakeName())
                 .member(member)
                 .email(email)
-                .createdYear(request.getCreatedYear())
+                .createdYear(createdYear)
                 .candleCreatePermission(request.getCandleCreatePermission())
                 .candleViewPermission(request.getCandleViewPermission())
                 .candleCountPermission(request.getCandleCountPermission())

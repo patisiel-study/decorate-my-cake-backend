@@ -3,26 +3,17 @@ package com.example.decoratemycakebackend.domain.cake.repository;
 import com.example.decoratemycakebackend.domain.cake.entity.Cake;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface CakeRepository extends JpaRepository<Cake, Long> {
-    @Query("SELECT c FROM Cake c WHERE c.member.email = :email AND c.createdAt = :createdAt")
-    Optional<Cake> findByMemberEmailAndCreatedAt(@Param("email") String email, @Param("createdAt") LocalDate createdAt);
-
-    @Query("SELECT c FROM Cake c ORDER BY c.createdAt DESC")
-    Cake findLatestByCreatedAt();
 
     List<Cake> findAllByMemberEmail(String email);
-    Optional<Cake> findByMemberEmailAndCakeName(String email, String cakeName);
 
     Optional<Cake> findByEmailAndCreatedYear(String email, int year);
-    boolean existsByEmailAndCreatedYear(String email, int createdYear);
 
-    Optional<Cake> findByMemberEmail(String email);
-
-
+    // 최신 연도의 케이크를 가져오는 쿼리 메서드
+    @Query("SELECT c FROM Cake c WHERE c.email = :email ORDER BY c.createdYear DESC")
+    Optional<Cake> findLatestCakeByEmail(String email);
 }
