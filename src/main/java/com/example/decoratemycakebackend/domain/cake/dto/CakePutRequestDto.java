@@ -14,10 +14,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CakePutRequestDto {
-    @Schema(description = "이메일", example = "test1234@gmail.com", required = true)
-    private String email;
     @Schema(description = "케이크 생성년도", example = "2024", required = true)
     private Integer createdYear;
+    @Schema(description = "케이크 이미지 이름", example = "redCake", required = true)
+    private String cakeName;
 
     @Schema(description = "캔들 생성 허용 범위", example = "ANYONE", required = true)
     private CandleCreatePermission candleCreatePermission;

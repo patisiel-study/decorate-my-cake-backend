@@ -7,6 +7,7 @@ import com.example.decoratemycakebackend.domain.member.entity.Member;
 import com.example.decoratemycakebackend.domain.member.repository.MemberRepository;
 import com.example.decoratemycakebackend.global.error.CustomException;
 import com.example.decoratemycakebackend.global.error.ErrorCode;
+import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.example.decoratemycakebackend.global.util.BirthdayUtil.getNextBirthday;
-import static com.example.decoratemycakebackend.global.util.ValidationUtil.validateCurrentEmail;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +40,7 @@ public class CakeService {
     }
 
     public CakePutResponseDto updateCake(CakePutRequestDto request) {
-        String email = request.getEmail();
-        validateCurrentEmail(email);
+        String email = SecurityUtil.getCurrentUserEmail();
 
         Member member = getMember(email);
 
@@ -49,9 +48,7 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
         // 권한 필드 업데이트
-        cake.updatePermissions(request.getCandleCreatePermission(),
-                request.getCandleViewPermission(),
-                request.getCandleCountPermission());
+        cake.updatePermissions(request);
 
         Cake updatedCake = cakeRepository.save(cake);
 
@@ -77,9 +74,7 @@ public class CakeService {
 
     public CakeCreateResponseDto createCake(CakeCreateRequestDto request) {
 
-        // 프론트에서 보낸 email과 로그인 된 유저의 email 일치 여부 확인
-        String email = request.getEmail();
-        validateCurrentEmail(email);
+        String email = SecurityUtil.getCurrentUserEmail();
         // 멤버 정보 DB에서 조회
         Member member = getMember(email);
 

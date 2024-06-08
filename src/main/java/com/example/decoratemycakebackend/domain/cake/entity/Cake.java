@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.cake.entity;
 
+import com.example.decoratemycakebackend.domain.cake.dto.CakePutRequestDto;
 import com.example.decoratemycakebackend.domain.candle.entity.Candle;
 import com.example.decoratemycakebackend.domain.member.entity.Member;
 import com.example.decoratemycakebackend.global.common.BaseEntity;
@@ -53,16 +54,10 @@ public class Cake extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public int getCakeCreatedYear() {
-        return getCreatedAt().getYear();
+    public void updatePermissions(CakePutRequestDto request) {
+        this.cakeName = request.getCakeName();
+        this.candleCreatePermission = request.getCandleCreatePermission();
+        this.candleViewPermission = request.getCandleViewPermission();
+        this.candleCountPermission = request.getCandleCountPermission();
     }
-
-    public void updatePermissions(CandleCreatePermission candleCreatePermission,
-                                  CandleViewPermission candleViewPermission,
-                                  CandleCountPermission candleCountPermission) {
-        this.candleCreatePermission = candleCreatePermission;
-        this.candleViewPermission = candleViewPermission;
-        this.candleCountPermission = candleCountPermission;
-    }
-
 }
