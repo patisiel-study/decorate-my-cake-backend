@@ -83,19 +83,19 @@ public class CakeService {
         // 멤버 정보 DB에서 조회
         Member member = getMember(email);
 
+        // 생일까지 남은기간 계산
+        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
+        // 다음 생일의 연도 계산
+        int nextBirthdayYear = LocalDate.now().plusDays(daysUntilBirthday).getYear();
+
         // 이미 해당 년도에 생성한 케이크가 있는지 확인
-        cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear())
+        cakeRepository.findByEmailAndCreatedYear(email, nextBirthdayYear)
                 .ifPresent(cake -> {
                     throw new CustomException(ErrorCode.ALREADY_CREATED_CAKE);
                 });
 
-        // 생일까지 남은기간 계산
-        Integer daysUntilBirthday = calculateDaysUntilBirthday(LocalDate.now(), member.getBirthday());
-
         // D-30보다 많이 남은 경우, 케이크 생성 불가 안내
         if (daysUntilBirthday > 30) {
-            // 에러를 띄우면 아래와 같은 동적 메시지를 반환할 수 없으므로 폐기했음.
-            //throw new CustomException(ErrorCode.FORBIDDEN_CREATE_CAKE);
             return CakeCreateResponseDto.builder()
                     .birthday(member.getBirthday().toString())
                     .dDay(daysUntilBirthday)
@@ -104,7 +104,7 @@ public class CakeService {
         }
 
         // 케이크 정보 생성
-        Cake cake = createCake(request, member, email);
+        Cake cake = createCake(request, member, email, nextBirthdayYear);
         // DB에 정보 저장후 멤버 정보 업데이트
         saveCakeAndUpdateMember(cake, member);
         // 케이크 설정 정보 생성
@@ -145,12 +145,12 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private Cake createCake(CakeCreateRequestDto request, Member member, String email) {
+    private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear) {
         return Cake.builder()
                 .cakeName(request.getCakeName())
                 .member(member)
                 .email(email)
-                .createdYear(request.getCreatedYear())
+                .createdYear(createdYear)
                 .candleCreatePermission(request.getCandleCreatePermission())
                 .candleViewPermission(request.getCandleViewPermission())
                 .candleCountPermission(request.getCandleCountPermission())

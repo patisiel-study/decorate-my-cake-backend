@@ -29,7 +29,6 @@ public class FriendCakeService {
     public CakeViewResponseDto getCakeFromSomeone(String someoneEmail) { //친구 이메일 입력 받기, 친구 관계인지 확인 친구 아니면 예외
         Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
         Member someone = memberRepository.findByEmail(someoneEmail)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
