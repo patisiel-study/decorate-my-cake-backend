@@ -105,13 +105,17 @@ public class CakeService {
         return createCakeCreateResponseDto(cake, daysUntilBirthday);
     }
 
-    public CakeViewResponseDto getCakeData() {
+    public CakeViewResponseDto getCakeData(Integer createdYear) {
         // 로그인 한 유저의 케이크 정보를 가져오는 기능임.
         String email = SecurityUtil.getCurrentUserEmail();
 
         Member member = getMember(email);
-        // 가장 최신 연도의 케이크 정보 가져오기
-        Optional<Cake> cake = cakeRepository.findLatestCakeByEmail(email);
+
+        // 프론트가 createdYear 입력시 -> 해당 연도 케이크 정보 반환
+        // 미입력시 -> 가장 최신 연도의 케이크 정보 가져오기
+        Optional<Cake> cake = (createdYear != null)
+                ? cakeRepository.findByEmailAndCreatedYear(email, createdYear)
+                : cakeRepository.findLatestCakeByEmail(email);
 
         // 생일까지 남은기간 계산
         LocalDate birthday = member.getBirthday();

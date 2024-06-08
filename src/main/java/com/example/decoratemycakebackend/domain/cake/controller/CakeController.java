@@ -56,11 +56,12 @@ public class CakeController {
     }
 
     @Operation(summary = "나의 케이크 정보 열람", description = "특정 연도 케이크에 대한 정보, 설정에 대한 정보 열람 가능<br>"+
+            "createdYear 입력시 해당 연도 케이크 정보 열람, 미입력시 가장 최신 연도 케이크 정보 열람<br>"+
             "케이크가 없는 경우 메시지 출력 예시1: (D-30 초과) 생일까지 D-313 남았습니다. 케이크 생성은 생일 D-30일부터 가능합니다.<br>" +
             "케이크가 없는 경우 메시지 출력 예시2: (D-30 이하) 민교수님의 28살 생일 케이크를 만들어 보세요!")
     @GetMapping("/view")
-    public ResponseEntity<ResponseDto<?>> getCakeData() {
-        return ResponseEntity.ok(new ResponseDto<>("케이크 및 캔들 열람이 완료되었습니다.", cakeService.getCakeData()));
+    public ResponseEntity<ResponseDto<?>> getCakeData(@RequestParam(value = "createdYear", required = false) Integer createdYear) {
+        return ResponseEntity.ok(new ResponseDto<>("케이크 및 캔들 열람이 완료되었습니다.", cakeService.getCakeData(createdYear)));
     }
 
     @Operation(summary = "타인(친구)의 당해 케이크 정보 열람", description = "타인(친구)의 당해 년도 케이크에 대한 정보, 설정에 대한 정보 열람 가능<br>" +
