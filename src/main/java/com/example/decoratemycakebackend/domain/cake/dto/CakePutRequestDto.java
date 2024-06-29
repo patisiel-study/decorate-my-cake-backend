@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.cake.dto;
 
+import com.example.decoratemycakebackend.domain.cake.entity.CakeName;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
@@ -17,7 +18,7 @@ public class CakePutRequestDto {
     @Schema(description = "케이크 생성년도", example = "2024", required = true)
     private Integer createdYear;
     @Schema(description = "케이크 이미지 이름", example = "redCake", required = true)
-    private String cakeName;
+    private CakeName cakeName;
 
     @Schema(description = "캔들 생성 허용 범위", example = "ANYONE", required = true)
     private CandleCreatePermission candleCreatePermission;

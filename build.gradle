@@ -55,6 +55,11 @@ dependencies {
 
     // redis 설정
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    //aws S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation "com.amazonaws:aws-java-sdk-s3:1.12.395"
+
 }
 
 tasks.named('test') {

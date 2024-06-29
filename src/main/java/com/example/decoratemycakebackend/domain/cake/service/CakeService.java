@@ -7,6 +7,7 @@ import com.example.decoratemycakebackend.domain.member.entity.Member;
 import com.example.decoratemycakebackend.domain.member.repository.MemberRepository;
 import com.example.decoratemycakebackend.global.error.CustomException;
 import com.example.decoratemycakebackend.global.error.ErrorCode;
+import com.example.decoratemycakebackend.global.s3.S3Service;
 import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import static com.example.decoratemycakebackend.global.util.BirthdayUtil.getNext
 public class CakeService {
     private final CakeRepository cakeRepository;
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     //전체 케이크 email로 가져오는거 creatat 필요없음
     // stream과 정적 팩토리 메서드의 사용으로 코드 개선함
@@ -97,8 +99,11 @@ public class CakeService {
                     .build();
         }
 
+        // S3로부터 케이크 이미지 URL 가져오기
+        String imageUrl = s3Service.getImageUrl(String.valueOf(request.getCakeName()));
+
         // 케이크 정보 생성
-        Cake cake = createCake(request, member, email, nextBirthdayYear);
+        Cake cake = createCake(request, member, email, nextBirthdayYear, imageUrl);
         // DB에 정보 저장후 멤버 정보 업데이트
         saveCakeAndUpdateMember(cake, member);
         // 케이크 설정 정보 생성
@@ -144,11 +149,12 @@ public class CakeService {
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear) {
+    private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear, String imageUrl) {
         return Cake.builder()
                 .cakeName(request.getCakeName())
                 .member(member)
                 .email(email)
+                .cakeUrl(imageUrl)
                 .createdYear(createdYear)
                 .candleCreatePermission(request.getCandleCreatePermission())
                 .candleViewPermission(request.getCandleViewPermission())
@@ -165,6 +171,7 @@ public class CakeService {
 
     private CakeCreateResponseDto createCakeCreateResponseDto(Cake cake, Integer daysUntilBirthday) {
         return CakeCreateResponseDto.builder()
+                .cakeUrl(cake.getCakeUrl())
                 .candleCreatePermission(cake.getCandleCreatePermission())
                 .candleViewPermission(cake.getCandleViewPermission())
                 .candleCountPermission(cake.getCandleCountPermission())

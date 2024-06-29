@@ -1,9 +1,6 @@
 package com.example.decoratemycakebackend.domain.cake.dto;
 
-import com.example.decoratemycakebackend.domain.cake.entity.Cake;
-import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
-import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
-import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
+import com.example.decoratemycakebackend.domain.cake.entity.*;
 import com.example.decoratemycakebackend.domain.member.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +12,9 @@ import lombok.Setter;
 public class CakeViewResponseDto {
     private String message;
     private String nickname;
-    private String cakeName;
+    private CakeName cakeName;
     private String birthday;
+    private String cakeUrl;
     private Integer candleCount;
     private Integer cakeCreatedYear;
     private Integer dDay;
@@ -30,6 +28,7 @@ public class CakeViewResponseDto {
                 .message(message)
                 .nickname(member.getNickname())
                 .cakeName(cake.getCakeName())
+                .cakeUrl(cake.getCakeUrl())
                 .birthday(member.getBirthday().toString())
                 .dDay(dDay)
                 .candleCount(cake.getCandles().size())
