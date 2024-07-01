@@ -23,7 +23,10 @@ public class Cake extends BaseEntity {
     private Long id;
     private Integer createdYear;
     private String email;
-    private String cakeName;
+    private String cakeUrl;
+
+    @Enumerated(EnumType.STRING)
+    private CakeName cakeName;
 
     @Enumerated(EnumType.STRING)
     private CandleCreatePermission candleCreatePermission;

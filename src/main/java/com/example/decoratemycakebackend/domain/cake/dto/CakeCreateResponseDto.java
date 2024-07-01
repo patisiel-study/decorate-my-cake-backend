@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.cake.dto;
 
+import com.example.decoratemycakebackend.domain.cake.entity.CakeName;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCountPermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleCreatePermission;
 import com.example.decoratemycakebackend.domain.cake.entity.CandleViewPermission;
@@ -11,7 +12,8 @@ import lombok.Getter;
 public class CakeCreateResponseDto {
     private String message;
     private String nickname;
-    private String cakeName;
+    private CakeName cakeName;
+    private String cakeUrl;
     private String birthday;
     private Integer dDay;
     private Integer cakeCreatedYear;
