@@ -85,4 +85,8 @@ public class Member implements UserDetails {
         return true;
     }
 
+    public void changeProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
 }

@@ -9,6 +9,8 @@ import com.example.decoratemycakebackend.global.auth.JwtToken;
 import com.example.decoratemycakebackend.global.auth.JwtTokenProvider;
 import com.example.decoratemycakebackend.global.error.CustomException;
 import com.example.decoratemycakebackend.global.error.ErrorCode;
+import com.example.decoratemycakebackend.global.s3.S3Service;
+import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +34,7 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberMapper memberMapper;
+    private final S3Service s3Service;
 
     public JwtToken logIn(String username, String password) {
         // 1. username + password 기반으로 Authentication 객체 생성
@@ -70,5 +75,26 @@ public class MemberService {
 
     public void logout(String email) {
         jwtTokenProvider.deleteRefreshToken(email);
+    }
+
+    public String uploadProfileImg(MultipartFile file) throws IOException {
+        String email = SecurityUtil.getCurrentUserEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        String imageUrl = s3Service.uploadProfileImg(file);
+
+        member.changeProfileImg(imageUrl);
+        memberRepository.save(member);
+
+        return imageUrl;
+    }
+
+    public String getProfileImgUrl() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        return member.getProfileImg();
     }
 }
