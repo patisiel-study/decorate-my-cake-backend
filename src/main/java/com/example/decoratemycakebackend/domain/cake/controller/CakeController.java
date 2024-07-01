@@ -5,7 +5,6 @@ import com.example.decoratemycakebackend.domain.cake.dto.CakeDeleteRequestDto;
 import com.example.decoratemycakebackend.domain.cake.dto.CakePutRequestDto;
 import com.example.decoratemycakebackend.domain.cake.service.CakeService;
 import com.example.decoratemycakebackend.domain.cake.service.FriendCakeService;
-import com.example.decoratemycakebackend.global.s3.S3Service;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +23,6 @@ public class CakeController {
 
     private final CakeService cakeService;
     private final FriendCakeService friendCakeService;
-    private final S3Service s3Service;
 
 
     @Operation(summary = "나의 역대 케이크 전체 조회", description = "각 연도별 케이크 목록 조회")

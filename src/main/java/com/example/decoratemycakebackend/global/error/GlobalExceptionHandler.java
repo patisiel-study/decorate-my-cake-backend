@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.global.error;
 
+import io.jsonwebtoken.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -92,6 +93,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(ErrorCode.INVALID_REQUEST_BODY.getStatus())
                 .body(new ErrorResponse(ErrorCode.INVALID_REQUEST_BODY));
+    }
+
+    @ExceptionHandler(IOException.class)
+    protected ResponseEntity<ErrorResponse> handlerIOException(IOException e) {
+        log.error("handlerIOException: {}", e.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR));
     }
 
     /*
