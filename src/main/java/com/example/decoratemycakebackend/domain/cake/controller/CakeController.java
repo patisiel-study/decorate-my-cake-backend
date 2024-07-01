@@ -12,12 +12,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Tag(name = "케이크 관리 API", description = "케이크 관리 API endpoints")
 @RestController
@@ -78,11 +74,6 @@ public class CakeController {
     @GetMapping("/friends/view/{friendEmail}")
     public ResponseEntity<ResponseDto<?>> getCakeForFriend(@PathVariable String friendEmail) {
         return ResponseEntity.ok(new ResponseDto<>("친구의 케이크 및 캔들 열람이 완료되었습니다.", friendCakeService.getCakeFromSomeone(friendEmail)));
-    }
-
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ResponseDto<?>> uploadFile(@RequestPart("file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(new ResponseDto<>("파일 업로드 완료.", s3Service.uploadFile(file)));
     }
 
 }
