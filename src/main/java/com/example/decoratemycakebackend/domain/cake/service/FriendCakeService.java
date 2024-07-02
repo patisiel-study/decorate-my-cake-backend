@@ -26,12 +26,19 @@ public class FriendCakeService {
     private final MemberRepository memberRepository;
     private final FriendRequestService friendRequestService;
 
-    public CakeViewResponseDto getCakeFromSomeone(String someoneEmail) { //친구 이메일 입력 받기, 친구 관계인지 확인 친구 아니면 예외
-        Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Member someone = memberRepository.findByEmail(someoneEmail)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+    private Member getMember(String email) {
 
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
+        }
+        return member;
+    }
+
+    public CakeViewResponseDto getCakeFromSomeone(String someoneEmail) { //친구 이메일 입력 받기, 친구 관계인지 확인 친구 아니면 예외
+        Member currentMember = getMember(SecurityUtil.getCurrentUserEmail());
+        Member someone = getMember(someoneEmail);
 
         // 올해의 타인의 케이크 정보 가져오기
         Cake someoneCake = getCake(someoneEmail, LocalDateTime.now().getYear());
@@ -75,6 +82,10 @@ public class FriendCakeService {
         // 케이크가 없는 경우
         if (someoneCake == null) {
             return cakeViewResponseDtoWithMessage(someone, "친구가 아직 케이크를 만들지 않았습니다!");
+        }
+        // 탈퇴한 회원인 경우
+        if (someoneCake.getMember().getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
         }
 
         switch (someoneCake.getCandleViewPermission()) {

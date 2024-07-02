@@ -78,8 +78,8 @@ public class MemberService {
     }
 
     public String uploadProfileImg(MultipartFile file) throws IOException {
-        String email = SecurityUtil.getCurrentUserEmail();
-        Member member = memberRepository.findByEmail(email)
+
+        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         String imageUrl = s3Service.uploadProfileImg(file);
@@ -92,9 +92,25 @@ public class MemberService {
 
     public String getProfileImgUrl() {
         String email = SecurityUtil.getCurrentUserEmail();
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = getCurrentMember();
 
         return member.getProfileImg();
+    }
+
+    public void deleteAccount() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        // 삭제된 회원으로 처리
+        member.markAsDeleted();
+        memberRepository.save(member);
+        // 로그아웃 처리
+        jwtTokenProvider.deleteRefreshToken(email);
+    }
+
+    private Member getCurrentMember() {
+        String email = SecurityUtil.getCurrentUserEmail();
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 }

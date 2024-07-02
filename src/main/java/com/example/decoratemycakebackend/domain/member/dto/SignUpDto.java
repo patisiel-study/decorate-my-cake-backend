@@ -1,6 +1,5 @@
 package com.example.decoratemycakebackend.domain.member.dto;
 
-import com.example.decoratemycakebackend.domain.member.entity.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -38,16 +36,6 @@ public class SignUpDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
+    @Schema(description = "기본 프로필 사진 이미지 url", example = "https://mycake-bucket.s3.ap-northeast-2.amazonaws.com/mycake/default_profile_img.png", required = true)
     private String profileImg;
-
-    public Member toEntity(String encodedPassword, List<String> roles) {
-        return Member.builder()
-                .email(email)
-                .password(encodedPassword)
-                .nickname(nickname)
-                .birthday(birthday)
-                .profileImg(profileImg)
-                .roles(roles)
-                .build();
-    }
 }

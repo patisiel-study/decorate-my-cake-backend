@@ -25,6 +25,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(Member member) {
+        if (member.getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
+        }
+
         return User.builder()
                 .username(member.getEmail())
                 .password(member.getPassword())
