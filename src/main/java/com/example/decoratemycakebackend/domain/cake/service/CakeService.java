@@ -49,8 +49,10 @@ public class CakeService {
         Cake cake = cakeRepository.findByEmailAndCreatedYear(email, request.getCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
+        String imageUrl = s3Service.getImageUrl(request.getCakeName().toString());
+
         // 권한 필드 업데이트
-        cake.updatePermissions(request);
+        cake.updatePermissions(request, imageUrl);
 
         Cake updatedCake = cakeRepository.save(cake);
 
@@ -210,7 +212,6 @@ public class CakeService {
         if (daysUntilBirthday > 30) {
             return buildDDayMessageDto(member, birthday, daysUntilBirthday);
         }
-        // TODO: 캔들 열람 기능은 candle 부분으로 이동되어야 함.
         // D-Day가 30일 이하로 남은 경우
         // 케이크 만든게 있다면 케이크의 일부 데이터만 반환
         return cakeOptional.map(cake -> buildCakeWithPartialCandleInfoDto(member, cake, daysUntilBirthday))
