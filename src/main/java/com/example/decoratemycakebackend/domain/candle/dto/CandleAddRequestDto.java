@@ -1,5 +1,6 @@
 package com.example.decoratemycakebackend.domain.candle.dto;
 
+import com.example.decoratemycakebackend.domain.candle.entity.CandleName;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 public class CandleAddRequestDto {
     private String candleTitle;
     private String candleContent;
-    private String candleName;
+    private CandleName candleName;
     private boolean isPrivate;
     private String writer;
     private String cakeOwnerEmail;

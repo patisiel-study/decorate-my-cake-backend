@@ -31,7 +31,7 @@ public class CandleController {
         return ResponseEntity.ok(new ResponseDto<>("캔들이 성공적으로 생성되었습니다.", candleListDto));
     }
 
-    @Operation(summary = "캔들 전체 가져오기", description = """
+    @Operation(summary = "케이크의 하위 캔들 전체 목록 가져오기", description = """
         page: 0, size: 10, sort: candleCreatedAt 이렇게 적으면 캔들 출력,
         
         candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,
@@ -44,14 +44,14 @@ public class CandleController {
         
         sortDirection: DESC(최신순), ASC(오래된순)
         """)
-    @GetMapping("/list")
-    public ResponseEntity<CandleResponseDto> getCandle(
+    @GetMapping("/list/bycake")
+    public ResponseEntity<CandleResponseDto> getCandleByCake(
             @RequestParam String email,
             @RequestParam int cakeCreatedYear,
             @RequestParam(defaultValue = "DESC") String sortDirection, // DESC: 내림차순(최신순), ASC: 오름차순(오래된 순)
             @PageableDefault(size = 10, sort = "candleCreatedAt") Pageable pageable
     ) {
-        CandleGetRequestDto requestDto = CandleGetRequestDto.builder()
+        CandleGetByCakeRequestDto requestDto = CandleGetByCakeRequestDto.builder()
                 .email(email)
                 .cakeCreatedYear(cakeCreatedYear)
                 .build();
@@ -60,37 +60,31 @@ public class CandleController {
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(direction, "candleCreatedAt"));
 
-        CandleResponseDto candleResponseDto = candleService.getCandle(requestDto, sortedPageable);
+        CandleResponseDto candleResponseDto = candleService.getCandleByCake(requestDto, sortedPageable);
 
         return ResponseEntity.ok(candleResponseDto);
 
     }
 
+    @Operation(summary = "사용자가 작성한 캔들 전체 목록 가져오기", description = """
+        page: 0, size: 10, sort: candleCreatedAt 이렇게 적으면 캔들 출력,
+        totalCandles: 전체 캔들 개수
+        sortDirection: DESC(최신순), ASC(오래된순)
+        """)
+    @GetMapping("/list/byuser")
+    public ResponseEntity<CandleResponseDto> getCandleByUser(
+            @RequestParam(defaultValue = "DESC") String sortDirection, // DESC: 내림차순(최신순), ASC: 오름차순(오래된 순)
+            @PageableDefault(size = 10, sort = "candleCreatedAt") Pageable pageable
+    ) {
+        // 정렬 방향을 설정
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(direction, "candleCreatedAt"));
 
+        CandleResponseDto candleResponseDto = candleService.getCandleByUser(sortedPageable);
 
-//    @Operation(summary = "캔들 년도별 최신순으로 정렬", description = "page: 0, size: 10,sort : candleCreatedAt 이렇게 적으면 캔들 출력,\n\n" +
-//            "candleViewPermission이 only_me 다른사람 접근시 이 케이크는 케이크 주인만 볼 수 있습니다,\n\n" +
-//            "candleViewPermission이 only_friends 친구 아닌 사람 접근시 이 케이크는 친구만 볼 수 있습니다,\n\n" +
-//            "다 아니면 메세지에 권한이 없습니다")
-//    @GetMapping("/year/desc")
-//    public ResponseEntity<ResponseDto<?>> getYearCandle(
-//            @RequestParam String email,
-//            @RequestParam int cakeCreatedYear,
-//            @PageableDefault(size = 10, sort = "candleCreatedAt", direction = Sort.Direction.DESC) Pageable pageable
-//    ) {
-//        CandleGetRequestDto requestDto = CandleGetRequestDto.builder()
-//                .email(email)
-//                .cakeCreatedYear(cakeCreatedYear)
-//                .build();
-//
-//
-//        //Page<CandleListDto> candlePage = candleService.getYearDescCandle(requestDto, pageable);
-//        CandleResponseDto candleResponseDto = candleService.getYearDescCandle(requestDto, pageable);
-//
-//        return ResponseEntity.ok(new ResponseDto<>("캔들 년도별 조회가 완료되었습니다.", candleResponseDto));
-//
-//    }
-// TODO: 나의 캔들 연도별 + 정렬 열람은 menu쪽에서 개발하도록 하자. 이의경우, 본인 캔들을 보는 것이므로 케이크 권한과 상관없다.
+        return ResponseEntity.ok(candleResponseDto);
+
+    }
 
     @Operation(summary = "캔들 한개 삭제", description = "캔들 id로 삭제하기")
     @DeleteMapping("/delete")

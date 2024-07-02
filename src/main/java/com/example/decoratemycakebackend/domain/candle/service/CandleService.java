@@ -13,6 +13,7 @@ import com.example.decoratemycakebackend.domain.member.entity.Member;
 import com.example.decoratemycakebackend.domain.member.repository.MemberRepository;
 import com.example.decoratemycakebackend.global.error.CustomException;
 import com.example.decoratemycakebackend.global.error.ErrorCode;
+import com.example.decoratemycakebackend.global.s3.S3Service;
 import com.example.decoratemycakebackend.global.util.ResponseDto;
 import com.example.decoratemycakebackend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class CandleService {
     private final MemberRepository memberRepository;
     private final CandleRepository candleRepository;
     private final FriendRequestService friendRequestService;
+    private final S3Service s3Service;
 
     private Member getMember(String member) {
         return memberRepository.findByEmail(member)
@@ -47,6 +49,8 @@ public class CandleService {
         Cake cake = cakeRepository.findByEmailAndCreatedYear(requestDto.getCakeOwnerEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
 
+        String imageUrl = s3Service.getImageUrl(requestDto.getCandleName().toString());
+
         // 케이크의 CandleCreatePermission 확인
         if (cake.getCandleCreatePermission() == CandleCreatePermission.ONLY_FRIENDS) {
             // 현재 사용자와 케이크 소유자가 친구 관계인지 확인
@@ -59,6 +63,8 @@ public class CandleService {
         Candle candle = Candle.builder()
                 .candleTitle(requestDto.getCandleTitle())
                 .candleContent(requestDto.getCandleContent())
+                .candleName(requestDto.getCandleName())
+                .candleUrl(imageUrl)
                 .writer(requestDto.getWriter())
                 .writerEmail(currentMember.getEmail())
                 .isPrivate(requestDto.isPrivate())
@@ -73,7 +79,16 @@ public class CandleService {
         return CandleListDto.from(savedCandle);
     }
 
-    public CandleResponseDto getCandle(CandleGetRequestDto requestDto, Pageable pageable) {
+    public CandleResponseDto getCandleByUser(Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserEmail();
+        Page<Candle> candlePage = candleRepository.findAllByWriterEmail(email, pageable);
+        Page<CandleListDto> candleListDtoPage = CandleListDto.from(candlePage);
+        long totalCandles = candlePage.getTotalElements();
+
+        return new CandleResponseDto("캔들 조회가 완료되었습니다.", candleListDtoPage, totalCandles);
+    }
+
+    public CandleResponseDto getCandleByCake(CandleGetByCakeRequestDto requestDto, Pageable pageable) {
         Member currentMember = getCurrentMember();
         Cake cake = getCake(requestDto);
 
@@ -95,27 +110,12 @@ public class CandleService {
         return new CandleResponseDto("캔들 조회가 완료되었습니다.", candleListDtoPage, totalCandles);
     }
 
-//
-//    public CandleResponseDto getYearDescCandle(CandleGetRequestDto requestDto, Pageable pageable) {
-//        Member currentMember = getCurrentMember();
-//        Cake cake = getCake(requestDto);
-//
-//        boolean canViewCandle = canViewCandle(cake, currentMember);
-//        String message = getViewCandleMessage(cake, canViewCandle);
-//
-//        Page<Candle> candlePage = candleRepository.findByCakeOrderByYearAndCandleCreatedAtDesc(cake, pageable);
-//
-//        Page<CandleListDto> candleListDtoPage = getCandleListDtos(candlePage, canViewCandle);
-//
-//        return new CandleResponseDto(message, candleListDtoPage);
-//    }
-
     private Member getCurrentMember() {
         return memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
-    private Cake getCake(CandleGetRequestDto requestDto) {
+    private Cake getCake(CandleGetByCakeRequestDto requestDto) {
         return cakeRepository.findByEmailAndCreatedYear(requestDto.getEmail(), requestDto.getCakeCreatedYear())
                 .orElseThrow(() -> new CustomException(ErrorCode.CAKE_NOT_FOUND));
     }
@@ -150,20 +150,9 @@ public class CandleService {
         };
     }
 
-
-    /*private String getCreateCandleMessage(Cake cake) {
-        if (cake.getCandleCreatePermission() == CandleCreatePermission.ONLY_FRIENDS) {
-            return "이 케이크는 친구만 작성할 수 있습니다.";
-        } else {
-            return null;
-        }
-    }*/
-
-
     public ResponseDto<CandleListDto> deleteCandle(CandleDeleteRequestDto requestDto) {
         Candle candle = candleRepository.findById(requestDto.getCandleId())
                         .orElseThrow(() -> new CustomException(ErrorCode.CANDLE_NOT_FOUND));
-
 
         candleRepository.delete(candle);
         return new ResponseDto<>("캔들 삭제", null);
