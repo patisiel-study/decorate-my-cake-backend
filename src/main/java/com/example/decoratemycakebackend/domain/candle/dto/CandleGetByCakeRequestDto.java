@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CandleGetRequestDto {
+public class CandleGetByCakeRequestDto {
     private String email;
     private Integer cakeCreatedYear;
 
