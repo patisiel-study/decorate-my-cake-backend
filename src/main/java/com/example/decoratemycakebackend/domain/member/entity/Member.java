@@ -38,7 +38,12 @@ public class Member implements UserDetails {
     @Column(nullable = false)
     private LocalDate birthday;
 
+    @Column(nullable = false)
     private String profileImg;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean deleted = false;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @Builder.Default
@@ -87,6 +92,10 @@ public class Member implements UserDetails {
 
     public void changeProfileImg(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public void markAsDeleted() {
+        this.deleted = true;
     }
 
 }

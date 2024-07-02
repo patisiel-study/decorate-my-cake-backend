@@ -17,5 +17,6 @@ public interface MemberMapper {
     FriendRequestListResponseDto toFriendRequestListResponseDto(Member member);
     @Mapping(target = "password", source = "encodedPassword")
     @Mapping(target = "roles", source = "roles")
+    @Mapping(target = "deleted", constant = "false")
     Member toMember(SignUpDto signUpDto, String encodedPassword, List<String> roles);
 }
