@@ -147,9 +147,15 @@ public class CakeService {
     }
 
     private Member getMember(String email) {
-        return memberRepository.findByEmail(email)
+
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
+        }
+        return member;
     }
+
 
     private Cake createCake(CakeCreateRequestDto request, Member member, String email, int createdYear, String imageUrl) {
         return Cake.builder()

@@ -105,4 +105,11 @@ public class MemberController {
         String imageUrl = memberService.getProfileImgUrl();
         return ResponseEntity.ok(new ResponseDto<>("프로필 이미지 URL 조회가 완료되었습니다.", imageUrl));
     }
+
+    @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 삭제 상태로 표시합니다.")
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto<?>> deleteAccount() {
+        memberService.deleteAccount();
+        return ResponseEntity.ok(new ResponseDto<>("회원 탈퇴가 완료되었습니다.", null));
+    }
 }

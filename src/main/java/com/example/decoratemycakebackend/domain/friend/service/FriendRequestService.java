@@ -27,14 +27,23 @@ public class FriendRequestService {
     private final MemberRepository memberRepository;
     private final MemberMapper memberMapper;
 
+    private Member getMember(String email) {
+
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
+        }
+        return member;
+    }
+
+
     // 친구 요청 보내기
     public void sendFriendRequest(FriendRequestDto friendRequestDto) {
         // 두 계정의 유효성 확인
-        Member sender = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member sender = getMember(SecurityUtil.getCurrentUserEmail());
 
-        Member receiver = memberRepository.findByEmail(friendRequestDto.getReceiverEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member receiver = getMember(friendRequestDto.getReceiverEmail());
 
         // 기존 요청 확인
         Optional<FriendRequest> existingRequest = friendRequestRepository.findBySenderAndReceiver(sender, receiver);
@@ -70,11 +79,9 @@ public class FriendRequestService {
     // 친구 요청 수락/거절 메서드
     public String confirmFriendRequest(FriendRequestAnswerDto friendRequestAnswerDto) {
         // 유효한 계정인지 확인
-        Member sender = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member sender = getMember(SecurityUtil.getCurrentUserEmail());
 
-        Member receiver = memberRepository.findByEmail(friendRequestAnswerDto.getReceiverEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member receiver = getMember(friendRequestAnswerDto.getReceiverEmail());
 
         // 두 계정간에 요청이 존재하는지 확인, 요청에 대한 답신이므로 두 매개변수를 반전시켰음.
         FriendRequest friendRequest = friendRequestRepository.findBySenderAndReceiver(receiver, sender)
@@ -95,8 +102,7 @@ public class FriendRequestService {
     // 친구 목록 열람
     public List<FriendListResponseDto> getFriendList() {
         // 로그인 된 유저의 이메일의 유효성 검사
-        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = getMember(SecurityUtil.getCurrentUserEmail());
 
         // 해당 멤버에 매핑된 친구 요청 목록중 ACCEPTED 상태인 것들만 가져오기
         List<FriendRequest> acceptedFriendRequests = friendRequestRepository.findAcceptedFriendRequestsByMember(member);
@@ -112,8 +118,7 @@ public class FriendRequestService {
 
     // 유저가 받은 친구 요청 리스트 열람. 친구 요청 상태가 PENDING으로 되어있는 것들만 추출하여 그 발신자 목록을 반환함.
     public List<FriendRequestListResponseDto> getFriendRequestList() {
-        Member member = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member member = getMember(SecurityUtil.getCurrentUserEmail());
 
         // 해당 유저에게 매핑된 친구 요청 엔티티중 PENDING 상태인 것들을 골라서 리스트로 할당
         List<FriendRequest> friendRequests = friendRequestRepository.findByReceiverAndStatus(member, FriendRequestStatus.PENDING);
@@ -128,12 +133,10 @@ public class FriendRequestService {
     // 친구 삭제
     @Transactional
     public void deleteFriend(String friendEmail) {
-        Member currentMember = memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member currentMember = getMember(SecurityUtil.getCurrentUserEmail());
         log.info("Current member: {}", currentMember.getEmail());
 
-        Member friendMember = memberRepository.findByEmail(friendEmail)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Member friendMember = getMember(friendEmail);
         log.info("Friend member: {}", friendMember.getEmail());
 
         // 두 멤버가 이미 친구 상태인지 조회

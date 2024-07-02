@@ -35,9 +35,14 @@ public class CandleService {
     private final FriendRequestService friendRequestService;
     private final S3Service s3Service;
 
-    private Member getMember(String member) {
-        return memberRepository.findByEmail(member)
+    private Member getMember(String email) {
+
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        if (member.getDeleted()) {
+            throw new CustomException(ErrorCode.MEMBER_DELETED);
+        }
+        return member;
     }
 
     public CandleListDto addCandle(CandleAddRequestDto requestDto) {
@@ -89,7 +94,7 @@ public class CandleService {
     }
 
     public CandleResponseDto getCandleByCake(CandleGetByCakeRequestDto requestDto, Pageable pageable) {
-        Member currentMember = getCurrentMember();
+        Member currentMember = getMember(SecurityUtil.getCurrentUserEmail());
         Cake cake = getCake(requestDto);
 
         // 케이크 주인이 허용한 권한과 일치 여부 확인
@@ -108,11 +113,6 @@ public class CandleService {
         long totalCandles = canViewCandleCount ? candlePage.getTotalElements() : -1; // 수정된 부분
 
         return new CandleResponseDto("캔들 조회가 완료되었습니다.", candleListDtoPage, totalCandles);
-    }
-
-    private Member getCurrentMember() {
-        return memberRepository.findByEmail(SecurityUtil.getCurrentUserEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
     }
 
     private Cake getCake(CandleGetByCakeRequestDto requestDto) {
