@@ -51,6 +51,7 @@ public class CakeController {
             "캔들 생성 허용 범위: ANYONE, ONLY_FRIENDS<br>" +
             "캔들 열람 허용 범위: ONLY_ME, ONLY_FRIENDS, ANYONE<br>" +
             "캔들 개수 열람 허용 범위: ANYONE, ONLY_ME<br>" +
+            "cakeName 종류: BROWN_CAKE, RED_CAKE, GREEN_CAKE" +
             "케이크가 생성 실패의 경우 메시지 출력 예시: 생일까지 D-313 남았습니다. 케이크 생성은 생일 D-30일부터 가능합니다.")
     @PostMapping("/create")
     public ResponseEntity<ResponseDto<?>> createCake(@Valid @RequestBody CakeCreateRequestDto request) {
