@@ -43,7 +43,8 @@ TOOL
 
 ### 3. 시스템 아키텍처
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/36df41d4-a45a-405e-a4ca-3fd009ec24be/Untitled.png)
+<img width="470" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/bebf08b6-3278-4422-8738-2adc92e73219">
+
 
 - Docker-compose를 활용한 컨테이너 관리 및 개발 환경 통일
 - 로그인 및 api 사용시 발생하는 토큰 검증 및 갱신 기능을 redis에서 전담하도록 역할 분리
@@ -55,25 +56,28 @@ TOOL
 
 ### 4. 플로우 차트
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/03d2c9ed-6d6c-40ad-b085-5bf4e8a4fada/Untitled.png)
+<img width="847" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/29190b08-a9f3-422d-95c3-200e64b4cdd1">
+
 
 ### 5. ERD
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/79012bb7-4816-4745-bd0d-ef7b63e13e22/Untitled.png)
+<img width="849" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/9d270249-1d8a-4dd3-aafd-12e9daa8fe17">
+
 
 ## 👥 협업 플로우
 
 Swagger-api를 활용하여 프론트엔드에게 api 명세서를 작성하여 공유
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/a1f31bb1-77a5-4248-96d7-c74ce5e15d0b/Untitled.png)
+<img width="850" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/90eb9f6a-c283-469e-b2dd-b1404f2d5098">
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/680967b7-31c1-4640-a14e-64357e7fcb73/Untitled.png)
+<img width="850" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/f45accfc-2a7b-43d8-9327-4ae7e5b03101">
+
 
 Notion 및 Github Issue를 활용하여 프론트엔드 팀원과 소통
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/4ecb623e-1dcc-403a-8091-b495c3963e6e/Untitled.png)
+<img width="647" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/33e8b7ec-1cf6-4917-8bb1-9c54220b6323">
+<img width="855" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/b7f29978-2c9c-458d-ab46-6051699b8dd1">
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/e8d18eb9-7fbe-4f37-b75b-7c4906e59f87/Untitled.png)
 
 ## 📌 나의 역할
 
