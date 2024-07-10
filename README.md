@@ -12,8 +12,8 @@
     - Back-End: 2
 - 배포 링크
 - Github 링크
-    - Front-End
-    - Back-End
+    - [Front-End](https://github.com/patisiel-study/decorate-my-cake-frontend)
+    - [Back-End](https://github.com/patisiel-study/decorate-my-cake-backend)
 
  ## 🔥 Project
 
@@ -108,7 +108,8 @@ Notion 및 Github Issue를 활용하여 프론트엔드 팀원과 소통
     
     **해결방법**
     
-    ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/ea766dd4-d4c0-4507-991b-039b0b4af06f/97d03704-75eb-4744-b109-4623b1377ce7/Untitled.png)
+    <img width="283" alt="image" src="https://github.com/patisiel-study/decorate-my-cake-backend/assets/84646738/b70bc370-ded3-4ef2-9d3f-b28af5857b8d">
+
     
     ```java
     @Entity
