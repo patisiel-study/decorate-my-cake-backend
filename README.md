@@ -3,6 +3,8 @@
 
 온라인 롤링 페이퍼 서비스 내 트리를 꾸며줘!를 모티브로 클론코딩 프로젝트를 진행함
 
+팀 노션 링크: - [Notion](https://www.notion.so/astar5327z/24-1-1a97b5c64acb4fe9ac90792ce59f7a5a?pvs=4)
+
 ## Intro
 
 - 개발 기간
