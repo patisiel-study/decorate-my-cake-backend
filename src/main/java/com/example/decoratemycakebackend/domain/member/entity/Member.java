@@ -59,10 +59,10 @@ public class Member implements UserDetails {
                         .collect(Collectors.toList());
     }
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
     private List<FriendRequest> receivedFriendRequests = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<FriendRequest> sendFriendRequests = new ArrayList<>();
 
     @Override
