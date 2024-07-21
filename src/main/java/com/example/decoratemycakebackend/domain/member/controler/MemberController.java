@@ -51,7 +51,6 @@ public class MemberController {
         log.debug("jwtToken accessToken = {}, refreshToken = {}", jwtToken.getAccessToken(), jwtToken.getRefreshToken());
 
         return ResponseEntity.ok(new ResponseDto<>("로그인 성공.", jwtToken));
-
     }
 
     @Operation(summary = "회원가입", description = "새로운 회원을 등록합니다.")
